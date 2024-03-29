@@ -12,31 +12,33 @@ import mvc.view.GameArea;
 import javax.swing.Timer;
 import java.util.Random;
 
-
 /**
  *Implementation class of GameLoop interface.
  *Check the relative interface for the documentation.
  */
 public class GameLoopImpl implements GameLoop {
-    private static final Integer FIRST_LEVEL = 10;
-    private static final Integer SECOND_LEVEL = 20;
-    private static final Integer THIRD_LEVEL = 30;
-    private static final Integer TWO_S = 2000;
-    private static final Integer ONE_HALF_S = 1500;
-    private static final Integer ONE_S = 1000;
-    private static final Integer HALF_S = 500;
+
+    private static final Integer INITIAL_SPAWN_TIME = 3000;
     private static final Double DT = 0.2;
-    private Integer spawnTime;
     private static final Integer REDRAW_DELAY = 10;
-    private static final double PERCENTAGE = 0.35;
-    private static final Random RANDOM = new Random();
+    private static final Double PERCENTAGE = 0.35;
+    private static final Integer DECREASE_50 = 50;
+    private static final Integer DECREASE_100 = 100;
+    private static final Integer DECREASE_150 = 150;
+    private static final Integer HALF_SEC = 500;
+    private static final Integer N_POINTS = 10;
+
+    private Integer decreaseFactor = 0;
+    private Integer spawnTime;
+    private Integer lastScore = 0;
 
     private final GameWorldControllerImpl world;
     private final PhysicControllerImpl physics;
     private final GameScreenImpl screen;
     private final LiveImpl lives;
-    private Timer gameTimer;
+    private final Timer gameTimer;
     private final Timer redrawTimer;
+    private final Random rand = new Random();
 
     /**
      * Constructor.
@@ -48,7 +50,7 @@ public class GameLoopImpl implements GameLoop {
         this.lives = screen.getCurrentLives();
         this.screen = screen;
         this.world = world;
-        this.spawnTime = TWO_S;
+        this.spawnTime = INITIAL_SPAWN_TIME;
         this.physics = new PhysicControllerImpl(DT, world);
         final GameArea area = screen.createAndShowGui();
 
@@ -71,9 +73,9 @@ public class GameLoopImpl implements GameLoop {
      */
     @Override
     public void loop(final GameArea area) {
-        final double choice = RANDOM.nextDouble();
-        this.setDifficulty(area);
-        final int id = RANDOM.nextInt();
+        final double choice = this.rand.nextDouble();
+        this.incrementDifficulty();
+        final int id = this.rand.nextInt();
         final SliceableModel sliceable = choice < PERCENTAGE ? world.createBomb(id) : this.world.createPolygon(id);
         area.drawSliceable(sliceable.getSliceableId(), sliceable.getPosition(), sliceable.getSides());
     }
@@ -115,29 +117,44 @@ public class GameLoopImpl implements GameLoop {
     }
 
     /**
-     * Set the difficulty.
-     * @param area the game area
+     * Increment the difficulty every n points.
      */
-    private void setDifficulty(final GameArea area) {
-        final int score = screen.getScoreValue();
-        boolean updateTimer = false;
+    private void incrementDifficulty() {
 
-        if (score == FIRST_LEVEL) {
-            spawnTime = ONE_HALF_S;
-            updateTimer = true;
-        } else if (score == SECOND_LEVEL) {
-            spawnTime = ONE_S;
-            updateTimer = true;
-        } else if (score == THIRD_LEVEL) {
-            spawnTime = HALF_S;
-            updateTimer = true;
+        if (spawnTime - decreaseFactor <= HALF_SEC) {
+            spawnTime = HALF_SEC;
+            return;
         }
 
-        if (updateTimer) {
+        final int score = screen.getScoreValue();
+
+        if (score % N_POINTS == 0 && score != lastScore) {
+            spawnTime -= decreaseFactor;
+            this.lastScore = score;
             gameTimer.stop();
-            gameTimer = new Timer(spawnTime, e -> this.loop(area));
-            gameTimer.setRepeats(true);
-            gameTimer.start();
+            gameTimer.setDelay(spawnTime);
+            gameTimer.restart();
         }
     }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public void setDifficulty(final int difficulty) {
+        switch (difficulty) {
+            case 0:
+                this.decreaseFactor = DECREASE_50;
+                break;
+            case 1:
+                this.decreaseFactor = DECREASE_100;
+                break;
+            case 2:
+                this.decreaseFactor = DECREASE_150;
+                break;
+            default:
+                throw new IllegalArgumentException("Incorrect difficulty value!");
+        }
+    }
+
 }

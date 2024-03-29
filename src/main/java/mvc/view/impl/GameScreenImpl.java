@@ -9,6 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedWriter;
@@ -28,12 +30,14 @@ public class GameScreenImpl implements GameScreen {
     private final LiveImpl livesLabel = new LiveImpl();
     private final ScoreViewImpl scoreLabel = new ScoreViewImpl();
     private final JFrame frame;
+    private final Dimension screenSize;
 
     /**
      * GameScreen constructor.
      */
     public GameScreenImpl() {
         frame = new JFrame("Polygon Cutter");
+        this.screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     }
 
     /**
@@ -156,4 +160,21 @@ public class GameScreenImpl implements GameScreen {
             return 0;
         }
     }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public int getScreenHeight() {
+        return this.screenSize.height;
+    }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public int getScreenWidth() {
+        return this.screenSize.width;
+    }
+
 }

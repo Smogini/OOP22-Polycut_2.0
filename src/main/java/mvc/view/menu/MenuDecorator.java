@@ -8,12 +8,14 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * MenuDecorator class models a simple menu without nothing but the screen, is used for decorate the menu with other objects.
  */
 public class MenuDecorator extends SimpleMenu {
 
-    private static final int BUTTON_FONT_SIZE = 20;
+    private static final int BUTTON_FONT_SIZE = 25;
     private static final int BUTTON_FONT_STYLE = Font.PLAIN;
 
     private final Menu simpleMenu;
@@ -22,6 +24,7 @@ public class MenuDecorator extends SimpleMenu {
      * 
      * @param simpleMenu
      */
+    @SuppressFBWarnings
     public MenuDecorator(final Menu simpleMenu) {
         this.simpleMenu = simpleMenu;
     }
@@ -44,6 +47,22 @@ public class MenuDecorator extends SimpleMenu {
         button.setFocusPainted(false);
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDifficulty() {
+        return this.simpleMenu.getDifficulty();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setDifficulty(final int difficulty) {
+        this.simpleMenu.setDifficulty(difficulty);
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import mvc.controller.GameLoop;
 import mvc.controller.GameWorldController;
 import mvc.model.SliceableModel;
 import mvc.model.SliceableFactory;
@@ -17,17 +18,22 @@ import mvc.view.impl.GameScreenImpl;
  */
 public class GameWorldControllerImpl implements GameWorldController {
 
+    private final GameScreenImpl screen;
     private final SliceableFactory factory;
     private List<SliceableModel> polygons;
     private List<SliceableModel> bombs;
+    private final int difficulty;
 
     /**
      * Constructor of the game world.
+     * @param difficulty
      */
-    public GameWorldControllerImpl() {
-        this.factory = new SliceableFactoryImpl();
+    public GameWorldControllerImpl(final int difficulty) {
+        this.screen = new GameScreenImpl();
+        this.factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight());
         this.polygons = new ArrayList<>();
         this.bombs = new ArrayList<>();
+        this.difficulty = difficulty;
     }
 
     /**
@@ -87,8 +93,8 @@ public class GameWorldControllerImpl implements GameWorldController {
      */
     @Override
     public void startLoop() {
-        final GameScreenImpl screen = new GameScreenImpl();
-        new GameLoopImpl(this, screen);
+        final GameLoop gameLoop = new GameLoopImpl(this, screen);
+        gameLoop.setDifficulty(this.difficulty);
     }
 
     /**

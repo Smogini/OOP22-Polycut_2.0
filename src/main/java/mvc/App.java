@@ -1,5 +1,6 @@
 package mvc;
 
+import mvc.view.menu.DifficultyButton;
 import mvc.view.menu.ExitButton;
 import mvc.view.Menu;
 import mvc.view.menu.PlayButton;
@@ -20,7 +21,7 @@ public final class App {
      * Initialize the basic menu.
      */
     public static void initializeGame() {
-        final Menu menu = new PlayButton(new RulesButton(new ExitButton(new SimpleMenu())));
+        final Menu menu = new PlayButton(new DifficultyButton(new RulesButton(new ExitButton(new SimpleMenu()))));
 
         final JFrame container = new JFrame();
         final JPanel buttonPanel = new JPanel();

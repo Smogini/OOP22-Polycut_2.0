@@ -16,4 +16,10 @@ public interface GameLoop {
      * @param area the middle area to redraw.
      */
     void redraw(GameArea area);
+
+    /**
+     * 
+     * @param difficulty
+     */
+    void setDifficulty(int difficulty);
 }

@@ -14,4 +14,15 @@ public interface Menu {
      * @param buttonPanel where the multiple buttons will be contained.
      */
     void display(JFrame container, JPanel buttonPanel);
+
+    /**
+     * @return the current difficulty
+     */
+    int getDifficulty();
+
+    /**
+     * Set the difficulty.
+     * @param difficulty
+     */
+    void setDifficulty(int difficulty);
 }

@@ -21,9 +21,11 @@ public class SimpleMenu implements Menu {
     private static final int WIDTH = 500;
     private static final int HEIGHT = 300;
     private static final int TOP_GAP = 50;
-    private static final int BUTTON_H_GAP = 50;
-    private static final int LABEL_FONT_SIZE = 40;
+    private static final int BUTTON_H_GAP = 20;
+    private static final int LABEL_FONT_SIZE = 50;
     private static final int LABEL_FONT_STYLE = Font.PLAIN;
+
+    private int difficulty;
 
     /**
      * Creates a simple menu interface.
@@ -59,6 +61,22 @@ public class SimpleMenu implements Menu {
     public void display(final JFrame container, final JPanel buttonPanel) {
         createSimpleMenu(container, buttonPanel);
         container.setVisible(true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getDifficulty() {
+        return this.difficulty;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setDifficulty(final int difficulty) {
+        this.difficulty = difficulty;
     }
 
 }

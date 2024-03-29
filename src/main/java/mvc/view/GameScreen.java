@@ -40,4 +40,16 @@ public interface GameScreen {
      * @return the best score of the player
      */
     int getCurrentBestScore();
+
+    /**
+     * 
+     * @return the height of the screen
+     */
+    int getScreenHeight();
+
+    /**
+     * 
+     * @return the width of the screen
+     */
+    int getScreenWidth();
 }

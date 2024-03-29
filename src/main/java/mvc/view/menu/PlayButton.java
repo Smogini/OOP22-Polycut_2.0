@@ -26,7 +26,7 @@ public class PlayButton extends MenuDecorator {
     public void display(final JFrame container, final JPanel buttonPanel) {
         final JButton playButton = new JButton("Play");
         playButton.addActionListener(arg0 -> {
-            final var gameWorld = new GameWorldControllerImpl();
+            final var gameWorld = new GameWorldControllerImpl(getDifficulty());
             container.dispose();
             gameWorld.startLoop();
         });
