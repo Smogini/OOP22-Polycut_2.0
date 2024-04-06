@@ -30,7 +30,7 @@ public class GameWorldControllerImpl implements GameWorldController {
      */
     public GameWorldControllerImpl(final int difficulty) {
         this.screen = new GameScreenImpl();
-        this.factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight());
+        this.factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight(), difficulty);
         this.polygons = new ArrayList<>();
         this.bombs = new ArrayList<>();
         this.difficulty = difficulty;

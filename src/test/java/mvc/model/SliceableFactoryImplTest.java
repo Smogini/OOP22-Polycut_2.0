@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class SliceableFactoryImplTest {
     private final GameScreen screen = new GameScreenImpl();
-    private final SliceableFactoryImpl factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight());
+    private final SliceableFactoryImpl factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight(), 0);
 
     /**
      * Test class of the Sliceable Factory createBomb method. It controls that every Bomb created

@@ -19,7 +19,7 @@ public final class SliceableView {
      * Public width, same for every sliceable.
      */
     public static final int SLICEABLE_WIDTH = 100;
-    private static final int HEXAGON_HEIGHT = 113;
+    private static final int HEXAGON_HEIGHT = 112;
     private static final int PENTAGON_HEIGHT = 97;
     private static final int SQUARE_HEIGHT = 98;
     private static final int TRIANGLE_HEIGHT = 88;
