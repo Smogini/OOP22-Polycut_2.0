@@ -1,6 +1,11 @@
 package mvc.model;
 
 import org.junit.jupiter.api.Test;
+
+import mvc.controller.LivesController;
+import mvc.controller.ScoreController;
+import mvc.controller.impl.LivesControllerImpl;
+import mvc.controller.impl.ScoreControllerImpl;
 import mvc.model.impl.SliceableFactoryImpl;
 import mvc.view.GameScreen;
 import mvc.view.impl.GameScreenImpl;
@@ -8,8 +13,11 @@ import mvc.view.impl.GameScreenImpl;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class SliceableFactoryImplTest {
-    private final GameScreen screen = new GameScreenImpl();
-    private final SliceableFactoryImpl factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight(), 0);
+    private final LivesController livesController = new LivesControllerImpl();
+    private final ScoreController scoreController = new ScoreControllerImpl();
+    private final GameScreen screen = new GameScreenImpl(livesController, scoreController);
+    private final SliceableFactoryImpl factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight(), 0,
+                                                                          livesController, scoreController);
 
     /**
      * Test class of the Sliceable Factory createBomb method. It controls that every Bomb created

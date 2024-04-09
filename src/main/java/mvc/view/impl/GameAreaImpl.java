@@ -2,15 +2,25 @@ package mvc.view.impl;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import mvc.model.SliceableTypeEnum;
+import mvc.controller.BladeController;
+import mvc.model.GameObjectEnum;
+import mvc.model.SliceableModel;
 import mvc.view.GameArea;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,37 +31,36 @@ import java.util.Objects;
  * GameArea class, it represents the playable area.
  */
 public class GameAreaImpl extends JPanel implements GameArea {
+
     private static final long serialVersionUID = 0L;
+
+    private final BladeController bladeController;
     private final Map<Integer, JLabel> labelMap = new HashMap<>();
-    private final LiveImpl lives;
-    private final ScoreViewImpl score;
     private final List<Integer> sliceablesID;
 
     /**
      * Constructor initiates a list of Bombs and Polygon present in the GameArea.
-     * @param lives current lives
-     * @param score current score
+     * 
+     * @param bladeController
      */
     @SuppressFBWarnings
-    public GameAreaImpl(final LiveImpl lives, final ScoreViewImpl score) {
-        this.lives = lives;
-        this.score = score;
+    public GameAreaImpl(final BladeController bladeController) {
+        this.bladeController = bladeController;
         this.sliceablesID = new ArrayList<>();
         this.setLayout(null);
     }
 
     /**
-     * Create The Sliceable and attach the listener.
-     * @param position the initial position
-     * @param type of Sliceable, to manage mouse listener and dimensions
+     * {@inheritdoc}.
      */
     @Override
-    public void drawSliceable(final Integer sliceableID, final Point2D position, final SliceableTypeEnum type) {
-        final int sliceableHeight = SliceableView.getSliceableHeight(type);
+    public void drawSliceable(final SliceableModel sliceable, final GameObjectEnum type) {
+        final int sliceableId = sliceable.getSliceableId();
+        final int sliceableHeight = type.getHeight();
         final int sliceableWidth = SliceableView.SLICEABLE_WIDTH;
-        final int posX = (int) position.getX();
-        final int posY = (int) position.getY();
-        final ImageIcon image = SliceableView.getImage(type);
+        final int posX = (int) sliceable.getPosition().getX();
+        final int posY = (int) sliceable.getPosition().getY();
+        final ImageIcon image = new ImageIcon(SliceableView.class.getResource(type.getImagePath()));
 
         final JLabel newSliceableLabel = new JLabel(image);
         newSliceableLabel.setBounds(posX, posY, sliceableWidth, sliceableHeight);
@@ -59,19 +68,45 @@ public class GameAreaImpl extends JPanel implements GameArea {
         newSliceableLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(final MouseEvent e) {
-                if (type.equals(SliceableTypeEnum.BOMB)) {
-                    lives.decreaseLives();
-                } else {
-                    score.increaseScore();
-                }
-                sliceablesID.add(sliceableID);
-                clean(sliceableID);
+                playSound("Audio/prova.wav");
+                bladeController.cutSliceable(sliceable);
+                sliceablesID.add(sliceableId);
+                clean(sliceableId);
                 revalidate();
                 repaint();
             }
         });
-        labelMap.put(sliceableID, newSliceableLabel);
+        labelMap.put(sliceableId, newSliceableLabel);
         this.add(newSliceableLabel);
+    }
+
+    /**
+     * Plays the audio track specified by filePath.
+     * @param filePath
+     */
+    private void playSound(final String filePath) {
+            final InputStream soundStream = this.getClass().getClassLoader().getResourceAsStream(filePath);
+            final AudioInputStream audioInputStream;
+            final Clip clip;
+            try {
+                audioInputStream = AudioSystem.getAudioInputStream(soundStream);
+                clip = AudioSystem.getClip();
+                clip.addLineListener(event -> {
+                    if (event.getType() == LineEvent.Type.STOP) {
+                        clip.close();
+                        try {
+                            audioInputStream.close();
+                        } catch (final IOException e) {
+                            /* TODO REMOVE */
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                clip.open(audioInputStream);
+                clip.start();
+            } catch (final UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+                e.printStackTrace();
+            }
     }
 
     /**
@@ -81,8 +116,8 @@ public class GameAreaImpl extends JPanel implements GameArea {
      * @param type of the sliceable to manage dimensions
      */
     @Override
-    public void updatePosition(final Integer sliceableID, final Point2D newPosition, final SliceableTypeEnum type) {
-        final int sliceableHeight = SliceableView.getSliceableHeight(type);
+    public void updatePosition(final Integer sliceableID, final Point2D newPosition, final GameObjectEnum type) {
+        final int sliceableHeight = type.getHeight();
         final int sliceableWidth = SliceableView.SLICEABLE_WIDTH;
 
         labelMap.computeIfPresent(sliceableID, (key, label) -> {

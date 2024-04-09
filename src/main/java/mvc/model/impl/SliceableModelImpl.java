@@ -2,25 +2,28 @@ package mvc.model.impl;
 
 import java.awt.geom.Point2D;
 import mvc.model.SliceableModel;
-import mvc.model.SliceableTypeEnum;
+import mvc.model.GameObjectEnum;
 
 /**
  * {@inheritDoc}.
  */
 public class SliceableModelImpl implements SliceableModel {
+
     private static final int THREE = 3;
     private static final int FOUR = 4;
     private static final int FIVE = 5;
-    private static final int BOMB = -1;
+    private static final int SIX = 6;
+    private static final int BOMB = 0;
     private static final Integer LOWER_BOUND = 1000;
-    private Point2D position;
+
     private final Integer sides;
-    private Point2D velocity;
     private final int sliceableId;
+    private Point2D position;
+    private Point2D velocity;
 
     /**
      * Constructor of a regular polygon.
-     * @param nsides   number of sides of the sliceable polygon.
+     * @param nsides number of sides of the sliceable polygon.
      * @param position Point2D position of the sliceable, to update every timestep.
      * @param velocity Point2D vector of the new velocity of the object.
      * @param sliceableId the sliceable identifier.
@@ -77,21 +80,22 @@ public class SliceableModelImpl implements SliceableModel {
      * {@inheritDoc}.
      */
     @Override
-    public SliceableTypeEnum getSides() {
+    public GameObjectEnum getSides() {
          switch (this.sides) {
             case BOMB:
-                return SliceableTypeEnum.BOMB;
+                return GameObjectEnum.BOMB;
             case THREE:
-                return SliceableTypeEnum.TRIANGLE;
+                return GameObjectEnum.TRIANGLE;
             case FOUR:
-                return SliceableTypeEnum.SQUARE;
+                return GameObjectEnum.SQUARE;
             case FIVE:
-                return SliceableTypeEnum.PENTAGON;
+                return GameObjectEnum.PENTAGON;
+            case SIX:
+                return GameObjectEnum.HEXAGON;
             default:
-                return SliceableTypeEnum.HEXAGON;
+                return GameObjectEnum.DOUBLE_POINTS;
         }
     }
-
 
     /**
      * {@inheritDoc}.
@@ -100,4 +104,10 @@ public class SliceableModelImpl implements SliceableModel {
     public boolean isOutOfBound() {
         return this.getPosition().getY() > LOWER_BOUND;
     }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public void cut() { }
 }

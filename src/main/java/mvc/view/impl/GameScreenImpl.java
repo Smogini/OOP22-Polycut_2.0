@@ -1,5 +1,8 @@
 package mvc.view.impl;
 
+import mvc.controller.BladeController;
+import mvc.controller.LivesController;
+import mvc.controller.ScoreController;
 import mvc.view.GameScreen;
 
 import javax.swing.JFrame;
@@ -27,24 +30,30 @@ import java.nio.charset.StandardCharsets;
  * GameScreen class, it represents the PlayButton generated GUI.
  */
 public class GameScreenImpl implements GameScreen {
-    private final LiveImpl livesLabel = new LiveImpl();
-    private final ScoreViewImpl scoreLabel = new ScoreViewImpl();
+
+    private final LiveImpl livesLabel;
+    private final ScoreViewImpl scoreLabel;
     private final JFrame frame;
     private final Dimension screenSize;
 
     /**
      * GameScreen constructor.
+     * 
+     * @param livesController
+     * @param scoreController
      */
-    public GameScreenImpl() {
+    public GameScreenImpl(final LivesController livesController, final ScoreController scoreController) {
         frame = new JFrame("Polygon Cutter");
         this.screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        this.livesLabel = livesController.getLiveInstance();
+        this.scoreLabel = scoreController.getScoreInstance();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public GameAreaImpl createAndShowGui() {
+    public GameAreaImpl createAndShowGui(final BladeController bladeController) {
         // Configuration of the Frame Behavior
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
@@ -96,21 +105,13 @@ public class GameScreenImpl implements GameScreen {
         upperPanel.add(scoreLabel, BorderLayout.EAST);
 
         //Adding the GameArea where Sliceable will be drawn
-        final var middleArea = new GameAreaImpl(this.livesLabel, this.scoreLabel);
+        final var middleArea = new GameAreaImpl(bladeController);
         frame.add(middleArea, BorderLayout.CENTER);
         middleArea.setOpaque(false);
 
         frame.setVisible(true);
 
         return middleArea;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public LiveImpl getCurrentLives() {
-        return this.livesLabel.getCurrLiveImpl();
     }
 
     /**

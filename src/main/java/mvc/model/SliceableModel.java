@@ -37,7 +37,7 @@ public interface SliceableModel {
      *
      * @return sides
      */
-    SliceableTypeEnum getSides();
+    GameObjectEnum getSides();
 
     /**
      * @return the id of the current sliceable.
@@ -49,4 +49,8 @@ public interface SliceableModel {
      */
     boolean isOutOfBound();
 
+    /**
+     * Manages the logic when the sliceable is cut.
+     */
+    void cut();
 }

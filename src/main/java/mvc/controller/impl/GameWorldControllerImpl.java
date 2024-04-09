@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import mvc.controller.BladeController;
 import mvc.controller.GameLoop;
 import mvc.controller.GameWorldController;
+import mvc.controller.LivesController;
+import mvc.controller.ScoreController;
 import mvc.model.SliceableModel;
+import mvc.model.PowerUpModel;
 import mvc.model.SliceableFactory;
 import mvc.model.impl.SliceableFactoryImpl;
 import mvc.view.impl.GameScreenImpl;
@@ -18,8 +22,11 @@ import mvc.view.impl.GameScreenImpl;
  */
 public class GameWorldControllerImpl implements GameWorldController {
 
+    private final BladeController blade;
     private final GameScreenImpl screen;
     private final SliceableFactory factory;
+    private final LivesController livesController;
+
     private List<SliceableModel> polygons;
     private List<SliceableModel> bombs;
     private final int difficulty;
@@ -29,8 +36,12 @@ public class GameWorldControllerImpl implements GameWorldController {
      * @param difficulty
      */
     public GameWorldControllerImpl(final int difficulty) {
-        this.screen = new GameScreenImpl();
-        this.factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight(), difficulty);
+        this.blade = new BladeControllerImpl();
+        this.livesController = new LivesControllerImpl();
+        final ScoreController scoreController = new ScoreControllerImpl();
+        this.screen = new GameScreenImpl(livesController, scoreController);
+        this.factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight(), difficulty,
+                                                livesController, scoreController);
         this.polygons = new ArrayList<>();
         this.bombs = new ArrayList<>();
         this.difficulty = difficulty;
@@ -75,6 +86,7 @@ public class GameWorldControllerImpl implements GameWorldController {
     public SliceableModel createPolygon(final int sliceableId) {
         final SliceableModel polygon = factory.createPolygon(sliceableId);
         this.polygons.add(polygon);
+        // this.blade.registerSliceable(polygon);
         return polygon;
     }
 
@@ -85,7 +97,19 @@ public class GameWorldControllerImpl implements GameWorldController {
     public SliceableModel createBomb(final int bombId) {
         final SliceableModel bomb = factory.createBomb(bombId);
         this.bombs.add(bomb);
+        // this.blade.registerSliceable(bomb);
         return bomb;
+    }
+
+    /**
+     * {@inheritdoc}.
+     */
+    @Override
+    public PowerUpModel createPowerUp(final int powerUpID) {
+        final PowerUpModel powerUp = factory.createPowerUp(powerUpID);
+        this.polygons.add(powerUp);
+        // this.blade.registerPowerUp(powerUp);
+        return powerUp;
     }
 
     /**
@@ -93,7 +117,7 @@ public class GameWorldControllerImpl implements GameWorldController {
      */
     @Override
     public void startLoop() {
-        final GameLoop gameLoop = new GameLoopImpl(this, screen);
+        final GameLoop gameLoop = new GameLoopImpl(this, this.livesController, screen);
         gameLoop.setDifficulty(this.difficulty);
     }
 
@@ -106,6 +130,7 @@ public class GameWorldControllerImpl implements GameWorldController {
     private <T extends SliceableModel> void deleteSliceableById(final List<T> sliceables,
                                                                 final Integer sliceableId) {
         sliceables.removeIf(sliceable -> sliceable.getSliceableId() == sliceableId);
+        // this.blade.unregisterSliceableByID(sliceableId);
     }
 
     /**
@@ -121,24 +146,17 @@ public class GameWorldControllerImpl implements GameWorldController {
      * {@inheritDoc}.
      */
     @Override
-    public void addBomb(final SliceableModel bomb) {
-        this.bombs.add(bomb);
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public void addPolygon(final SliceableModel polygon) {
-        this.polygons.add(polygon);
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
     public List<SliceableModel> getSliceables() {
         return Stream.concat(getPolygons().stream(), getBombs().stream())
                 .collect(Collectors.toList());
     }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public BladeController getBladeController() {
+        return this.blade;
+    }
+
 }

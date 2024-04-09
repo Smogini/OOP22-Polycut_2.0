@@ -3,7 +3,8 @@ package mvc.view;
 import java.awt.geom.Point2D;
 import java.util.List;
 
-import mvc.model.SliceableTypeEnum;
+import mvc.model.GameObjectEnum;
+import mvc.model.SliceableModel;
 
 /**
  * GameArea interface, models methods for drawing and updating sliceables.
@@ -12,11 +13,10 @@ public interface GameArea {
 
     /**
      * Create The Sliceable and attach the listener.
-     * @param sliceableID the ID of the object
-     * @param position the initial position
-     * @param type of Sliceable, to manage mouse listener and dimensions
+     * @param sliceable the sliceable to show on the screen.
+     * @param type of Sliceable, to manage mouse listener and dimensions.
      */
-    void drawSliceable(Integer sliceableID, Point2D position, SliceableTypeEnum type);
+    void drawSliceable(SliceableModel sliceable, GameObjectEnum type);
 
     /**
      * Update the position of the sliceable.
@@ -24,7 +24,7 @@ public interface GameArea {
      * @param newPosition of the sliceable
      * @param type of the sliceable to manage dimensions
      */
-    void updatePosition(Integer sliceableID, Point2D newPosition, SliceableTypeEnum type);
+    void updatePosition(Integer sliceableID, Point2D newPosition, GameObjectEnum type);
 
     /**
      * Clean the area.

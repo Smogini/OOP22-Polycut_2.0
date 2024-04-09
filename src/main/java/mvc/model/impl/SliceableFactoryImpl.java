@@ -3,6 +3,9 @@ package mvc.model.impl;
 import java.awt.geom.Point2D;
 import java.util.Random;
 
+import mvc.controller.LivesController;
+import mvc.controller.ScoreController;
+import mvc.model.PowerUpModel;
 import mvc.model.SliceableFactory;
 
 /**
@@ -12,11 +15,14 @@ public class SliceableFactoryImpl implements SliceableFactory {
 
     private static final Random RANDOM = new Random();
     private static final Integer MAX_SIDES = 4;
-    private static final Integer BOMB_SIDES = -1;
+    private static final Integer BOMB_SIDES = 0;
     private static final double MIN_X_VELOCITY = 30.0;
     private static final double MIN_Y_VELOCITY = 85.0;
     private static final double INC_X_RATE = 10.0;
     private static final double INC_Y_RATE = 40.0;
+
+    private final LivesController livesController;
+    private final ScoreController scoreController;
 
     private Point2D startPositionNext;
     private Point2D startVelocityNext;
@@ -29,11 +35,16 @@ public class SliceableFactoryImpl implements SliceableFactory {
      * @param width
      * @param height
      * @param difficulty
+     * @param livesController
+     * @param scoreController
      */
-    public SliceableFactoryImpl(final Integer width, final Integer height, final int difficulty) {
+    public SliceableFactoryImpl(final Integer width, final Integer height, final int difficulty,
+                                final LivesController livesController, final ScoreController scoreController) {
         this.screenWidth = width;
         this.screenHeight = height;
         this.difficulty = difficulty;
+        this.livesController = livesController;
+        this.scoreController = scoreController;
     }
 
     private double calcRandomX() {
@@ -93,16 +104,27 @@ public class SliceableFactoryImpl implements SliceableFactory {
     @Override
     public BombImpl createBomb(final int bombId) {
         this.doCalc();
-        return new BombImpl(BOMB_SIDES, startPositionNext, startVelocityNext, bombId);
+        return new BombImpl(BOMB_SIDES, startPositionNext, startVelocityNext, bombId, livesController);
     }
 
     /**
      * {@inheritDoc}.
-     * @return new Polygon
      */
     @Override
     public PolygonImpl createPolygon(final int polygonId) {
         this.doCalc();
-        return new PolygonImpl(RANDOM.nextInt(MAX_SIDES) + 3, startPositionNext, startVelocityNext, polygonId);
+        return new PolygonImpl(RANDOM.nextInt(MAX_SIDES) + 3, startPositionNext, startVelocityNext, polygonId, scoreController);
     }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public PowerUpModel createPowerUp(final int powerUpId) {
+        this.doCalc();
+        // final int powerUpChoice = RANDOM.nextInt() % 5;
+        // return new DoublePointsPowerUp(-1, startPositionNext, startVelocityNext, powerUpId);
+        return null;
+    }
+
 }

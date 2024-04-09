@@ -12,6 +12,7 @@ import java.io.InputStream;
  * Score class. Count the score of the game.
  */
 public final class ScoreViewImpl extends JLabel implements ScoreView {
+
     private static final double serialVersionUID = 0L;
     private static final int FONT_SIZE = 35;
     private int currentScore;
@@ -50,8 +51,8 @@ public final class ScoreViewImpl extends JLabel implements ScoreView {
      * {@inheritDoc}.
      */
     @Override
-    public void increaseScore() {
-        currentScore = currentScore + 1;
+    public void increaseScore(final int points) {
+        currentScore += points;
         this.drawScore();
     }
 
@@ -61,5 +62,13 @@ public final class ScoreViewImpl extends JLabel implements ScoreView {
     @Override
     public void drawScore() {
         this.setText("Score: " + currentScore);
+    }
+
+    /**
+     * {@inheritdoc}.
+     */
+    @Override
+    public ScoreViewImpl getCurrScoreImpl() {
+        return this;
     }
 }

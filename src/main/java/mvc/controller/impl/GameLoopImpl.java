@@ -3,6 +3,8 @@ package mvc.controller.impl;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import mvc.App;
 import mvc.controller.GameLoop;
+import mvc.controller.LivesController;
+import mvc.model.PowerUpModel;
 import mvc.model.SliceableModel;
 import mvc.model.impl.PolygonImpl;
 import mvc.view.impl.GameScreenImpl;
@@ -21,7 +23,8 @@ public class GameLoopImpl implements GameLoop {
     private static final Integer INITIAL_SPAWN_TIME = 3000;
     private static final Double DT = 0.2;
     private static final Integer REDRAW_DELAY = 10;
-    private static final Double PERCENTAGE = 0.35;
+    private static final Double SLICEABLE_PERCENTAGE = 0.3;
+    // private static final Double POWERUP_PERCENTAGE = 0.8;
     private static final Integer DECREASE_50 = 50;
     private static final Integer DECREASE_100 = 100;
     private static final Integer DECREASE_150 = 150;
@@ -43,19 +46,19 @@ public class GameLoopImpl implements GameLoop {
     /**
      * Constructor.
      * @param world game world controller.
+     * @param livesController lives controller.
      * @param screen the GameScreen.
      */
     @SuppressFBWarnings
-    public GameLoopImpl(final GameWorldControllerImpl world, final GameScreenImpl screen) {
-        this.lives = screen.getCurrentLives();
+    public GameLoopImpl(final GameWorldControllerImpl world, final LivesController livesController, final GameScreenImpl screen) {
+        this.lives = livesController.getLiveInstance();
         this.screen = screen;
         this.world = world;
         this.spawnTime = INITIAL_SPAWN_TIME;
         this.physics = new PhysicControllerImpl(DT, world);
-        final GameArea area = screen.createAndShowGui();
+        final GameArea area = screen.createAndShowGui(world.getBladeController());
 
         if (area != null) {
-            /*settings up the 2 timers, 1 for the object spawn and the other for the redrawing process*/
             this.gameTimer = new Timer(spawnTime, e -> this.loop(area));
             this.redrawTimer = new Timer(REDRAW_DELAY, e -> this.redraw(area));
             redrawTimer.setRepeats(true);
@@ -76,8 +79,11 @@ public class GameLoopImpl implements GameLoop {
         final double choice = this.rand.nextDouble();
         this.incrementDifficulty();
         final int id = this.rand.nextInt();
-        final SliceableModel sliceable = choice < PERCENTAGE ? world.createBomb(id) : this.world.createPolygon(id);
-        area.drawSliceable(sliceable.getSliceableId(), sliceable.getPosition(), sliceable.getSides());
+        // final SliceableModel sliceable = choice > SLICEABLE_PERCENTAGE && choice < POWERUP_PERCENTAGE ? this.world.createPolygon(id)
+        //                                 : choice > POWERUP_PERCENTAGE ? this.world.createPowerUp(id) : this.world.createBomb(id);
+        final SliceableModel sliceable = choice > SLICEABLE_PERCENTAGE ? this.world.createPolygon(id)
+                                                                       : this.world.createBomb(id);
+        area.drawSliceable(sliceable, sliceable.getSides());
     }
 
     /**
@@ -94,8 +100,8 @@ public class GameLoopImpl implements GameLoop {
                                 .ifPresent(sliceable -> {
                                     area.clean(sliceable.getSliceableId());
                                     world.outOfBoundDelete(sliceable.getSliceableId());
-                                    if (sliceable instanceof PolygonImpl) {
-                                        this.lives.decreaseLives();
+                                    if (sliceable instanceof PolygonImpl || sliceable instanceof PowerUpModel) {
+                                        this.lives.decreaseLives(1);
                                     }
                                 });
         this.world.getSliceables()

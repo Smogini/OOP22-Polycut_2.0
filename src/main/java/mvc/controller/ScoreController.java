@@ -1,22 +1,17 @@
-package mvc.view;
+package mvc.controller;
 
 import mvc.view.impl.ScoreViewImpl;
 
 /**
- * Interface that represents the Player's score.
+ * Controller that manages the logic of the user's score.
  */
-public interface ScoreView {
+public interface ScoreController {
 
     /**
      * Gets the shown player's score.
      * @return The score of the Player.
      */
     int getScore();
-
-    /**
-     * Draw the new score.
-     */
-    void drawScore();
 
     /**
      * Increease the player's score.
@@ -27,5 +22,5 @@ public interface ScoreView {
     /**
      * @return the istance of the Score class. Used to resolve spotbugs errors.
      */
-    ScoreViewImpl getCurrScoreImpl();
+    ScoreViewImpl getScoreInstance();
 }

@@ -2,6 +2,7 @@ package mvc.controller;
 
 import java.util.List;
 
+import mvc.model.PowerUpModel;
 import mvc.model.SliceableModel;
 
 /**
@@ -46,6 +47,13 @@ public interface GameWorldController {
     SliceableModel createBomb(int bombId);
 
     /**
+     * Creates a single power up.
+     * @param powerUpID the power up identifier.
+     * @return the newly created power up.
+     */
+    PowerUpModel createPowerUp(int powerUpID);
+
+    /**
      * Initialize the game screen and starts the game loop.
      */
     void startLoop();
@@ -57,21 +65,13 @@ public interface GameWorldController {
     void outOfBoundDelete(int sliceableId);
 
     /**
-     * 
-     * @param bomb
-     */
-    void addBomb(SliceableModel bomb);
-
-    /**
-     * 
-     * @param polygon
-     */
-    void addPolygon(SliceableModel polygon);
-
-    /**
      * Creates a new list from the concatenation of bombs and sliceables.
      * @return a list of all sliceables
      */
     List<SliceableModel> getSliceables();
 
+    /**
+     * @return the controller of the blade.
+     */
+    BladeController getBladeController();
 }

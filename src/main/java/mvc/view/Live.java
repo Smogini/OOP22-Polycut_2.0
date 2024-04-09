@@ -8,8 +8,9 @@ import mvc.view.impl.LiveImpl;
 public interface Live {
     /**
      * Decrease the current lives.
+     * @param lives
      */
-    void decreaseLives();
+    void decreaseLives(int lives);
 
     /**
      * Getter for livesCounter.

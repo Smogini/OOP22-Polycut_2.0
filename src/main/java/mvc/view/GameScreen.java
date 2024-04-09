@@ -1,7 +1,7 @@
 package mvc.view;
 
+import mvc.controller.BladeController;
 import mvc.view.impl.GameAreaImpl;
-import mvc.view.impl.LiveImpl;
 
 /**
  * Interface that defines the frame where the game is displayed.
@@ -10,14 +10,10 @@ public interface GameScreen {
 
     /**
      * Prepare the frame that contains all the game's elements.
+     * @param bladeController
      * @return GameArea
      */
-    GameAreaImpl createAndShowGui();
-
-    /**
-     * @return the istance of the lives label.
-     */
-    LiveImpl getCurrentLives();
+    GameAreaImpl createAndShowGui(BladeController bladeController);
 
     /**
      * @return the score
@@ -42,13 +38,11 @@ public interface GameScreen {
     int getCurrentBestScore();
 
     /**
-     * 
      * @return the height of the screen
      */
     int getScreenHeight();
 
     /**
-     * 
      * @return the width of the screen
      */
     int getScreenWidth();

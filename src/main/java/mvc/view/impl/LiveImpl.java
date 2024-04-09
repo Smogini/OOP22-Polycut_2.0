@@ -75,8 +75,8 @@ public class LiveImpl extends JLabel implements Live {
      *{@inheritDoc}.
      */
     @Override
-    public void decreaseLives() {
-        livesCounter = livesCounter - 1;
+    public void decreaseLives(final int lives) {
+        livesCounter = livesCounter - lives;
         drawLives();
     }
 
