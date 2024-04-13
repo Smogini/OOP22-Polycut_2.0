@@ -1,8 +1,12 @@
 package mvc.model;
 
+/**
+ * Power Up interface.
+ */
 public interface PowerUpModel extends SliceableModel {
 
-    void applyPowerUp();
-
+    /**
+     * @return the power up's type as GameObjectEnum.
+     */
     GameObjectEnum getPowerUpType();
 }

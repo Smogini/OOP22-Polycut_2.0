@@ -2,12 +2,15 @@ package mvc.model.impl;
 
 import java.awt.geom.Point2D;
 
-import mvc.controller.BladeController;
+import mvc.controller.ScoreController;
 import mvc.model.PowerUpModel;
 
+/**
+ * Abstract implementation of PowerUpModel, pre-defines the cut method for all classes that extend it.
+ */
 public abstract class AbstractPowerUp extends SliceableModelImpl implements PowerUpModel {
 
-    // private final BladeController bladeController;
+    private final ScoreController scoreController;
 
     /**
      * Constructor of a power up.
@@ -15,21 +18,21 @@ public abstract class AbstractPowerUp extends SliceableModelImpl implements Powe
      * @param position Point2D position of the sliceable, to update every timestep.
      * @param velocity Point2D vector of the new velocity of the object.
      * @param sliceableId the sliceable identifier.
-     * @param bladeController
+     * @param scoreController
      */
     public AbstractPowerUp(final Integer nsides, final Point2D position,
                            final Point2D velocity, final Integer sliceableId,
-                           final BladeController bladeController) {
+                           final ScoreController scoreController) {
         super(nsides, position, velocity, sliceableId);
-        // this.bladeController = bladeController;
+        this.scoreController = scoreController;
     }
 
     /**
      * {@inheritdoc}.
      */
     @Override
-    public void applyPowerUp() {
-        // this.bladeController.registerPowerUp(this);
+    public void cut() {
+        this.scoreController.increaseScore(1);
     }
 
 }

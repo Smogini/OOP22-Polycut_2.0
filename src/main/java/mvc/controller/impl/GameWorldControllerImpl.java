@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.swing.Timer;
 
 import mvc.controller.BladeController;
 import mvc.controller.GameLoop;
@@ -13,6 +14,7 @@ import mvc.controller.ScoreController;
 import mvc.model.SliceableModel;
 import mvc.model.PowerUpModel;
 import mvc.model.SliceableFactory;
+import mvc.model.impl.BombImpl;
 import mvc.model.impl.SliceableFactoryImpl;
 import mvc.view.impl.GameScreenImpl;
 
@@ -22,14 +24,18 @@ import mvc.view.impl.GameScreenImpl;
  */
 public class GameWorldControllerImpl implements GameWorldController {
 
+    private static final int IMMUNITY_TIME = 10_000;
+
     private final BladeController blade;
     private final GameScreenImpl screen;
     private final SliceableFactory factory;
     private final LivesController livesController;
 
     private List<SliceableModel> polygons;
-    private List<SliceableModel> bombs;
+    private List<BombImpl> bombs;
     private final int difficulty;
+    private final Timer immunityTimer;
+    private boolean isBombImmunity;
 
     /**
      * Constructor of the game world.
@@ -41,10 +47,11 @@ public class GameWorldControllerImpl implements GameWorldController {
         final ScoreController scoreController = new ScoreControllerImpl();
         this.screen = new GameScreenImpl(livesController, scoreController);
         this.factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight(), difficulty,
-                                                livesController, scoreController);
+                                                livesController, scoreController, this);
         this.polygons = new ArrayList<>();
         this.bombs = new ArrayList<>();
         this.difficulty = difficulty;
+        this.immunityTimer = new Timer(IMMUNITY_TIME, e -> this.isBombImmunity = false);
     }
 
     /**
@@ -67,7 +74,7 @@ public class GameWorldControllerImpl implements GameWorldController {
      * {@inheritDoc}.
      */
     @Override
-    public List<SliceableModel> getBombs() {
+    public List<BombImpl> getBombs() {
         return new ArrayList<>(this.bombs);
     }
 
@@ -75,7 +82,7 @@ public class GameWorldControllerImpl implements GameWorldController {
      * {@inheritDoc}.
      */
     @Override
-    public void setBombs(final List<SliceableModel> updatedList) {
+    public void setBombs(final List<BombImpl> updatedList) {
         this.bombs = new ArrayList<>(updatedList);
     }
 
@@ -86,7 +93,6 @@ public class GameWorldControllerImpl implements GameWorldController {
     public SliceableModel createPolygon(final int sliceableId) {
         final SliceableModel polygon = factory.createPolygon(sliceableId);
         this.polygons.add(polygon);
-        // this.blade.registerSliceable(polygon);
         return polygon;
     }
 
@@ -95,9 +101,9 @@ public class GameWorldControllerImpl implements GameWorldController {
      */
     @Override
     public SliceableModel createBomb(final int bombId) {
-        final SliceableModel bomb = factory.createBomb(bombId);
+        final BombImpl bomb = factory.createBomb(bombId);
+        bomb.setImmunity(isBombImmunity);
         this.bombs.add(bomb);
-        // this.blade.registerSliceable(bomb);
         return bomb;
     }
 
@@ -108,7 +114,6 @@ public class GameWorldControllerImpl implements GameWorldController {
     public PowerUpModel createPowerUp(final int powerUpID) {
         final PowerUpModel powerUp = factory.createPowerUp(powerUpID);
         this.polygons.add(powerUp);
-        // this.blade.registerPowerUp(powerUp);
         return powerUp;
     }
 
@@ -130,7 +135,6 @@ public class GameWorldControllerImpl implements GameWorldController {
     private <T extends SliceableModel> void deleteSliceableById(final List<T> sliceables,
                                                                 final Integer sliceableId) {
         sliceables.removeIf(sliceable -> sliceable.getSliceableId() == sliceableId);
-        // this.blade.unregisterSliceableByID(sliceableId);
     }
 
     /**
@@ -157,6 +161,17 @@ public class GameWorldControllerImpl implements GameWorldController {
     @Override
     public BladeController getBladeController() {
         return this.blade;
+    }
+
+    /**
+     * {@inheritDoc}.
+     */
+    @Override
+    public void setBombImmunity(final boolean immunity) {
+        if (immunity) {
+            this.immunityTimer.restart();
+        }
+        this.isBombImmunity = immunity;
     }
 
 }

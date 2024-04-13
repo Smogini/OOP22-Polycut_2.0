@@ -14,6 +14,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import mvc.controller.BladeController;
 import mvc.model.GameObjectEnum;
 import mvc.model.SliceableModel;
+import mvc.model.impl.BombImpl;
 import mvc.view.GameArea;
 
 import java.awt.event.MouseAdapter;
@@ -68,7 +69,11 @@ public class GameAreaImpl extends JPanel implements GameArea {
         newSliceableLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(final MouseEvent e) {
-                playSound("Audio/prova.wav");
+                if (sliceable instanceof BombImpl) {
+                    playSound("Audio/bomb.wav");
+                } else {
+                    playSound("Audio/cut.wav");
+                }
                 bladeController.cutSliceable(sliceable);
                 sliceablesID.add(sliceableId);
                 clean(sliceableId);
@@ -84,8 +89,8 @@ public class GameAreaImpl extends JPanel implements GameArea {
      * Plays the audio track specified by filePath.
      * @param filePath
      */
-    private void playSound(final String filePath) {
-            final InputStream soundStream = this.getClass().getClassLoader().getResourceAsStream(filePath);
+    public static void playSound(final String filePath) {
+            final InputStream soundStream = GameAreaImpl.class.getClassLoader().getResourceAsStream(filePath);
             final AudioInputStream audioInputStream;
             final Clip clip;
             try {
@@ -97,15 +102,14 @@ public class GameAreaImpl extends JPanel implements GameArea {
                         try {
                             audioInputStream.close();
                         } catch (final IOException e) {
-                            /* TODO REMOVE */
-                            e.printStackTrace();
+                            return;
                         }
                     }
                 });
                 clip.open(audioInputStream);
                 clip.start();
             } catch (final UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-                e.printStackTrace();
+                return;
             }
     }
 

@@ -4,9 +4,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import mvc.App;
 import mvc.controller.GameLoop;
 import mvc.controller.LivesController;
+import mvc.model.GameObjectEnum;
 import mvc.model.PowerUpModel;
 import mvc.model.SliceableModel;
 import mvc.model.impl.PolygonImpl;
+import mvc.view.impl.GameAreaImpl;
 import mvc.view.impl.GameScreenImpl;
 import mvc.view.impl.LiveImpl;
 import mvc.view.GameArea;
@@ -24,7 +26,7 @@ public class GameLoopImpl implements GameLoop {
     private static final Double DT = 0.2;
     private static final Integer REDRAW_DELAY = 10;
     private static final Double SLICEABLE_PERCENTAGE = 0.3;
-    // private static final Double POWERUP_PERCENTAGE = 0.8;
+    private static final Double POWERUP_PERCENTAGE = 0.8;
     private static final Integer DECREASE_50 = 50;
     private static final Integer DECREASE_100 = 100;
     private static final Integer DECREASE_150 = 150;
@@ -79,11 +81,11 @@ public class GameLoopImpl implements GameLoop {
         final double choice = this.rand.nextDouble();
         this.incrementDifficulty();
         final int id = this.rand.nextInt();
-        // final SliceableModel sliceable = choice > SLICEABLE_PERCENTAGE && choice < POWERUP_PERCENTAGE ? this.world.createPolygon(id)
-        //                                 : choice > POWERUP_PERCENTAGE ? this.world.createPowerUp(id) : this.world.createBomb(id);
-        final SliceableModel sliceable = choice > SLICEABLE_PERCENTAGE ? this.world.createPolygon(id)
-                                                                       : this.world.createBomb(id);
-        area.drawSliceable(sliceable, sliceable.getSides());
+        final SliceableModel sliceable = choice >= SLICEABLE_PERCENTAGE && choice < POWERUP_PERCENTAGE
+                                        ? this.world.createPolygon(id) : choice >= POWERUP_PERCENTAGE
+                                        ? this.world.createPowerUp(id) : this.world.createBomb(id);
+        GameAreaImpl.playSound("Audio/swoosh.wav");
+        area.drawSliceable(sliceable, GameObjectEnum.getSliceableType(sliceable.getSides()));
     }
 
     /**
@@ -105,7 +107,8 @@ public class GameLoopImpl implements GameLoop {
                                     }
                                 });
         this.world.getSliceables()
-                    .forEach(s -> area.updatePosition(s.getSliceableId(), s.getPosition(), s.getSides()));
+                    .forEach(s -> area.updatePosition(s.getSliceableId(), s.getPosition(),
+                            GameObjectEnum.getSliceableType(s.getSides())));
     }
 
     /**

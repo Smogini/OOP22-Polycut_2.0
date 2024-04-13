@@ -37,7 +37,7 @@ public interface SliceableModel {
      *
      * @return sides
      */
-    GameObjectEnum getSides();
+    int getSides();
 
     /**
      * @return the id of the current sliceable.

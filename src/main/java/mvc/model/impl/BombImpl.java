@@ -10,6 +10,7 @@ import mvc.controller.LivesController;
 public class BombImpl extends SliceableModelImpl {
 
     private final LivesController livesController;
+    private boolean immunity;
 
     /**
      * Constructor of a bomb.
@@ -25,6 +26,7 @@ public class BombImpl extends SliceableModelImpl {
                     final LivesController livesController) {
         super(nsides, position, velocity, sliceableId);
         this.livesController = livesController;
+        this.immunity = false;
     }
 
     /**
@@ -32,6 +34,17 @@ public class BombImpl extends SliceableModelImpl {
      */
     @Override
     public void cut() {
-        this.livesController.decreaseLives(1);
+        if (!this.immunity) {
+            this.livesController.decreaseLives(1);
+        }
     }
+
+    /**
+     * Set the bomb immunity.
+     * @param immunity if the player is immune
+     */
+    public void setImmunity(final boolean immunity) {
+        this.immunity = immunity;
+    }
+
 }

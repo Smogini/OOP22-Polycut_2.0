@@ -4,6 +4,7 @@ import java.util.List;
 
 import mvc.model.PowerUpModel;
 import mvc.model.SliceableModel;
+import mvc.model.impl.BombImpl;
 
 /**
  * Main controller of the game. Manages all the model and view of the game.
@@ -24,13 +25,13 @@ public interface GameWorldController {
      * Getter of the bombs.
      * @return a list of the bombs in game.
      */
-    List<SliceableModel> getBombs();
+    List<BombImpl> getBombs();
 
     /**
      * Update the current list of bombs with a new one.
      * @param updatedList the new list.
      */
-    void setBombs(List<SliceableModel> updatedList);
+    void setBombs(List<BombImpl> updatedList);
 
     /**
      * Creates a single polygon.
@@ -74,4 +75,10 @@ public interface GameWorldController {
      * @return the controller of the blade.
      */
     BladeController getBladeController();
+
+    /**
+     * Set the bomb immunity.
+     * @param immunity if the player is immune
+     */
+    void setBombImmunity(boolean immunity);
 }

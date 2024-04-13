@@ -2,18 +2,12 @@ package mvc.model.impl;
 
 import java.awt.geom.Point2D;
 import mvc.model.SliceableModel;
-import mvc.model.GameObjectEnum;
 
 /**
  * {@inheritDoc}.
  */
 public class SliceableModelImpl implements SliceableModel {
 
-    private static final int THREE = 3;
-    private static final int FOUR = 4;
-    private static final int FIVE = 5;
-    private static final int SIX = 6;
-    private static final int BOMB = 0;
     private static final Integer LOWER_BOUND = 1000;
 
     private final Integer sides;
@@ -80,21 +74,8 @@ public class SliceableModelImpl implements SliceableModel {
      * {@inheritDoc}.
      */
     @Override
-    public GameObjectEnum getSides() {
-         switch (this.sides) {
-            case BOMB:
-                return GameObjectEnum.BOMB;
-            case THREE:
-                return GameObjectEnum.TRIANGLE;
-            case FOUR:
-                return GameObjectEnum.SQUARE;
-            case FIVE:
-                return GameObjectEnum.PENTAGON;
-            case SIX:
-                return GameObjectEnum.HEXAGON;
-            default:
-                return GameObjectEnum.DOUBLE_POINTS;
-        }
+    public int getSides() {
+        return this.sides;
     }
 
     /**

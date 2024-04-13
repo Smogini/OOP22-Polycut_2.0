@@ -1,11 +1,13 @@
 package mvc.controller.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import mvc.controller.GameWorldController;
 import mvc.controller.PhysicController;
 import mvc.model.Physics;
 import mvc.model.SliceableModel;
+import mvc.model.impl.BombImpl;
 import mvc.model.impl.PhysicsImpl;
 
 /**
@@ -32,10 +34,10 @@ public class PhysicControllerImpl implements PhysicController {
     @Override
     public void updateSliceablesPosition() {
         final List<SliceableModel> currentPolygons = this.gameController.getPolygons();
-        final List<SliceableModel> currentBombs = this.gameController.getBombs();
+        final List<BombImpl> currentBombs = this.gameController.getBombs();
 
         this.physicsModel.doMaths(currentPolygons);
-        this.physicsModel.doMaths(currentBombs);
+        this.physicsModel.doMaths(currentBombs.stream().map(b -> (SliceableModel) b).collect(Collectors.toList()));
 
         this.gameController.setPolygons(currentPolygons);
         this.gameController.setBombs(currentBombs);
