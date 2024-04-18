@@ -2,13 +2,13 @@ package mvc.controller.impl;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import mvc.App;
+import mvc.controller.BladeController;
 import mvc.controller.GameLoop;
 import mvc.controller.LivesController;
 import mvc.model.GameObjectEnum;
 import mvc.model.PowerUpModel;
 import mvc.model.SliceableModel;
 import mvc.model.impl.PolygonImpl;
-import mvc.view.impl.GameAreaImpl;
 import mvc.view.impl.GameScreenImpl;
 import mvc.view.impl.LiveImpl;
 import mvc.view.GameArea;
@@ -31,7 +31,7 @@ public class GameLoopImpl implements GameLoop {
     private static final Integer DECREASE_100 = 100;
     private static final Integer DECREASE_150 = 150;
     private static final Integer HALF_SEC = 500;
-    private static final Integer N_POINTS = 10;
+    private static final Integer N_POINTS = 5;
 
     private Integer decreaseFactor = 0;
     private Integer spawnTime;
@@ -52,13 +52,14 @@ public class GameLoopImpl implements GameLoop {
      * @param screen the GameScreen.
      */
     @SuppressFBWarnings
-    public GameLoopImpl(final GameWorldControllerImpl world, final LivesController livesController, final GameScreenImpl screen) {
+    public GameLoopImpl(final GameWorldControllerImpl world, final LivesController livesController, final GameScreenImpl screen,
+                        final BladeController bladeController) {
         this.lives = livesController.getLiveInstance();
         this.screen = screen;
         this.world = world;
         this.spawnTime = INITIAL_SPAWN_TIME;
         this.physics = new PhysicControllerImpl(DT, world);
-        final GameArea area = screen.createAndShowGui(world.getBladeController());
+        final GameArea area = screen.createAndShowGui(bladeController);
 
         if (area != null) {
             this.gameTimer = new Timer(spawnTime, e -> this.loop(area));
@@ -68,8 +69,7 @@ public class GameLoopImpl implements GameLoop {
             gameTimer.setRepeats(true);
             gameTimer.start();
         } else {
-            this.gameTimer = null;
-            this.redrawTimer = null;
+            this.gameTimer = this.redrawTimer = null;
         }
     }
 
@@ -81,10 +81,11 @@ public class GameLoopImpl implements GameLoop {
         final double choice = this.rand.nextDouble();
         this.incrementDifficulty();
         final int id = this.rand.nextInt();
-        final SliceableModel sliceable = choice >= SLICEABLE_PERCENTAGE && choice < POWERUP_PERCENTAGE
-                                        ? this.world.createPolygon(id) : choice >= POWERUP_PERCENTAGE
-                                        ? this.world.createPowerUp(id) : this.world.createBomb(id);
-        GameAreaImpl.playSound("Audio/swoosh.wav");
+        // final SliceableModel sliceable = choice >= SLICEABLE_PERCENTAGE && choice < POWERUP_PERCENTAGE
+        //                                 ? this.world.createPolygon(id) : choice >= POWERUP_PERCENTAGE
+        //                                 ? this.world.createPowerUp(id) : this.world.createBomb(id);
+        final SliceableModel sliceable = choice >= SLICEABLE_PERCENTAGE ? this.world.createPowerUp(id) : this.world.createBomb(id);
+        // GameAreaImpl.playSound("Audio/cut.wav");
         area.drawSliceable(sliceable, GameObjectEnum.getSliceableType(sliceable.getSides()));
     }
 

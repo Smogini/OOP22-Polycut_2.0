@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.Random;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import mvc.controller.BladeController;
 import mvc.controller.GameWorldController;
 import mvc.controller.LivesController;
 import mvc.controller.ScoreController;
@@ -22,10 +23,12 @@ public class SliceableFactoryImpl implements SliceableFactory {
     private static final double MIN_Y_VELOCITY = 85.0;
     private static final double INC_X_RATE = 10.0;
     private static final double INC_Y_RATE = 40.0;
+    private static final Integer POWER_UP_CHOICE = 2;
 
     private final LivesController livesController;
     private final ScoreController scoreController;
     private final GameWorldController gameController;
+    private final BladeController bladeController;
 
     private Point2D startPositionNext;
     private Point2D startVelocityNext;
@@ -41,17 +44,19 @@ public class SliceableFactoryImpl implements SliceableFactory {
      * @param livesController
      * @param scoreController
      * @param gameController
+     * @param bladeController
      */
     @SuppressFBWarnings
     public SliceableFactoryImpl(final Integer width, final Integer height, final int difficulty,
                                 final LivesController livesController, final ScoreController scoreController,
-                                final GameWorldController gameController) {
+                                final GameWorldController gameController, final BladeController bladeController) {
         this.screenWidth = width;
         this.screenHeight = height;
         this.difficulty = difficulty;
         this.livesController = livesController;
         this.scoreController = scoreController;
         this.gameController = gameController;
+        this.bladeController = bladeController;
     }
 
     private double calcRandomX() {
@@ -129,14 +134,14 @@ public class SliceableFactoryImpl implements SliceableFactory {
     @Override
     public PowerUpModel createPowerUp(final int powerUpId) {
         this.doCalc();
-        final int powerUpChoice = RANDOM.nextInt(2);
+        final int powerUpChoice = RANDOM.nextInt(POWER_UP_CHOICE);
         switch (powerUpChoice) {
             case 0:
                 return new DoublePointsPowerUp(GameObjectEnum.getSliceableSides(GameObjectEnum.DOUBLE_POINTS), startPositionNext,
                                             startVelocityNext, powerUpId, this.scoreController);
             case 1:
                 return new BombImmunityPowerUp(GameObjectEnum.getSliceableSides(GameObjectEnum.BOMB_IMMUNITY), startPositionNext,
-                                            startVelocityNext, powerUpId, this.scoreController, this.gameController);
+                                            startVelocityNext, powerUpId, this.scoreController, this.bladeController);
             default:
                 break;
         }

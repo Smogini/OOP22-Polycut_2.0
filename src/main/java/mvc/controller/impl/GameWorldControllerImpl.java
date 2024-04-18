@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.swing.Timer;
 
 import mvc.controller.BladeController;
 import mvc.controller.GameLoop;
@@ -17,6 +16,7 @@ import mvc.model.SliceableFactory;
 import mvc.model.impl.BombImpl;
 import mvc.model.impl.SliceableFactoryImpl;
 import mvc.view.impl.GameScreenImpl;
+import mvc.view.impl.TimerViewImpl;
 
 /**
  * Implementation class of the GameWorld controller.
@@ -24,9 +24,7 @@ import mvc.view.impl.GameScreenImpl;
  */
 public class GameWorldControllerImpl implements GameWorldController {
 
-    private static final int IMMUNITY_TIME = 10_000;
-
-    private final BladeController blade;
+    private final BladeController bladeController;
     private final GameScreenImpl screen;
     private final SliceableFactory factory;
     private final LivesController livesController;
@@ -34,24 +32,22 @@ public class GameWorldControllerImpl implements GameWorldController {
     private List<SliceableModel> polygons;
     private List<BombImpl> bombs;
     private final int difficulty;
-    private final Timer immunityTimer;
-    private boolean isBombImmunity;
 
     /**
      * Constructor of the game world.
      * @param difficulty
      */
     public GameWorldControllerImpl(final int difficulty) {
-        this.blade = new BladeControllerImpl();
         this.livesController = new LivesControllerImpl();
         final ScoreController scoreController = new ScoreControllerImpl();
-        this.screen = new GameScreenImpl(livesController, scoreController);
+        final TimerViewImpl timerView = new TimerViewImpl();
+        this.screen = new GameScreenImpl(livesController, scoreController, timerView);
+        this.bladeController = new BladeControllerImpl(timerView);
         this.factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight(), difficulty,
-                                                livesController, scoreController, this);
+                                                livesController, scoreController, this, this.bladeController);
         this.polygons = new ArrayList<>();
         this.bombs = new ArrayList<>();
         this.difficulty = difficulty;
-        this.immunityTimer = new Timer(IMMUNITY_TIME, e -> this.isBombImmunity = false);
     }
 
     /**
@@ -102,7 +98,7 @@ public class GameWorldControllerImpl implements GameWorldController {
     @Override
     public SliceableModel createBomb(final int bombId) {
         final BombImpl bomb = factory.createBomb(bombId);
-        bomb.setImmunity(isBombImmunity);
+        bomb.setImmunity(this.bladeController.isBombImmunity());
         this.bombs.add(bomb);
         return bomb;
     }
@@ -122,7 +118,7 @@ public class GameWorldControllerImpl implements GameWorldController {
      */
     @Override
     public void startLoop() {
-        final GameLoop gameLoop = new GameLoopImpl(this, this.livesController, screen);
+        final GameLoop gameLoop = new GameLoopImpl(this, this.livesController, this.screen, this.bladeController);
         gameLoop.setDifficulty(this.difficulty);
     }
 
@@ -153,25 +149,6 @@ public class GameWorldControllerImpl implements GameWorldController {
     public List<SliceableModel> getSliceables() {
         return Stream.concat(getPolygons().stream(), getBombs().stream())
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public BladeController getBladeController() {
-        return this.blade;
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public void setBombImmunity(final boolean immunity) {
-        if (immunity) {
-            this.immunityTimer.restart();
-        }
-        this.isBombImmunity = immunity;
     }
 
 }

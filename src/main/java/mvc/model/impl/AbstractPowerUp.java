@@ -1,7 +1,6 @@
 package mvc.model.impl;
 
 import java.awt.geom.Point2D;
-
 import mvc.controller.ScoreController;
 import mvc.model.PowerUpModel;
 

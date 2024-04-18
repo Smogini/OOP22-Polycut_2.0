@@ -4,10 +4,12 @@ import mvc.controller.BladeController;
 import mvc.controller.LivesController;
 import mvc.controller.ScoreController;
 import mvc.view.GameScreen;
-
 import javax.swing.JFrame;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -33,6 +35,7 @@ public class GameScreenImpl implements GameScreen {
 
     private final LiveImpl livesLabel;
     private final ScoreViewImpl scoreLabel;
+    private final TimerViewImpl timerLabel;
     private final JFrame frame;
     private final Dimension screenSize;
 
@@ -41,12 +44,16 @@ public class GameScreenImpl implements GameScreen {
      * 
      * @param livesController
      * @param scoreController
+     * @param timerView
      */
-    public GameScreenImpl(final LivesController livesController, final ScoreController scoreController) {
+    @SuppressFBWarnings
+    public GameScreenImpl(final LivesController livesController, final ScoreController scoreController,
+                          final TimerViewImpl timerView) {
         frame = new JFrame("Polygon Cutter");
         this.screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.livesLabel = livesController.getLiveInstance();
         this.scoreLabel = scoreController.getScoreInstance();
+        this.timerLabel = timerView;
     }
 
     /**
@@ -100,6 +107,8 @@ public class GameScreenImpl implements GameScreen {
 
         // Lives on the left
         upperPanel.add(livesLabel, BorderLayout.WEST);
+
+        upperPanel.add(timerLabel, BorderLayout.CENTER);
 
         // Score on the right
         upperPanel.add(scoreLabel, BorderLayout.EAST);

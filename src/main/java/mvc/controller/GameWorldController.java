@@ -70,15 +70,4 @@ public interface GameWorldController {
      * @return a list of all sliceables
      */
     List<SliceableModel> getSliceables();
-
-    /**
-     * @return the controller of the blade.
-     */
-    BladeController getBladeController();
-
-    /**
-     * Set the bomb immunity.
-     * @param immunity if the player is immune
-     */
-    void setBombImmunity(boolean immunity);
 }

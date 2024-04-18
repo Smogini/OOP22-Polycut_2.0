@@ -72,7 +72,7 @@ public class GameAreaImpl extends JPanel implements GameArea {
                 if (sliceable instanceof BombImpl) {
                     playSound("Audio/bomb.wav");
                 } else {
-                    playSound("Audio/cut.wav");
+                    playSound("Audio/swoosh.wav");
                 }
                 bladeController.cutSliceable(sliceable);
                 sliceablesID.add(sliceableId);
