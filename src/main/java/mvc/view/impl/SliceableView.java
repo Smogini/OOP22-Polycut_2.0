@@ -6,9 +6,9 @@ package mvc.view.impl;
 public final class SliceableView {
 
     /**
-     * Public width, same for every sliceable.
+     * Public size (expressed in pixel), same for every sliceable.
      */
-    public static final int SLICEABLE_WIDTH = 100;
+    public static final int SLICEABLE_SIZE = 100;
 
     private SliceableView() { }
 }

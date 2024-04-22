@@ -25,9 +25,8 @@ import mvc.view.impl.TimerViewImpl;
 public class GameWorldControllerImpl implements GameWorldController {
 
     private final BladeController bladeController;
-    private final GameScreenImpl screen;
     private final SliceableFactory factory;
-    private final LivesController livesController;
+    private final GameLoop gameLoop;
 
     private List<SliceableModel> polygons;
     private List<BombImpl> bombs;
@@ -38,13 +37,14 @@ public class GameWorldControllerImpl implements GameWorldController {
      * @param difficulty
      */
     public GameWorldControllerImpl(final int difficulty) {
-        this.livesController = new LivesControllerImpl();
+        final LivesController livesController = new LivesControllerImpl();
         final ScoreController scoreController = new ScoreControllerImpl();
         final TimerViewImpl timerView = new TimerViewImpl();
-        this.screen = new GameScreenImpl(livesController, scoreController, timerView);
+        final GameScreenImpl screen = new GameScreenImpl(livesController, scoreController, timerView);
         this.bladeController = new BladeControllerImpl(timerView);
+        this.gameLoop = new GameLoopImpl(this, livesController, screen, this.bladeController);
         this.factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight(), difficulty,
-                                                livesController, scoreController, this, this.bladeController);
+                                                livesController, scoreController, this.bladeController);
         this.polygons = new ArrayList<>();
         this.bombs = new ArrayList<>();
         this.difficulty = difficulty;
@@ -118,8 +118,8 @@ public class GameWorldControllerImpl implements GameWorldController {
      */
     @Override
     public void startLoop() {
-        final GameLoop gameLoop = new GameLoopImpl(this, this.livesController, this.screen, this.bladeController);
-        gameLoop.setDifficulty(this.difficulty);
+        this.gameLoop.setDifficulty(this.difficulty);
+        this.gameLoop.startTimers();
     }
 
     /**

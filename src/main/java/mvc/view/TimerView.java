@@ -1,18 +1,33 @@
 package mvc.view;
 
+import javax.swing.JLabel;
+
+import mvc.model.GameObjectEnum;
+
 /**
  * Timer View interface.
  */
 public interface TimerView {
 
     /**
-     * Updates the label with the remaining time.
+     * Updates the specified label with the remaining time.
+     * @param label
      * @param remainingTime
+     * @param powerUpType
      */
-    void updateTimerLabel(int remainingTime);
+    void updateTimerLabel(JLabel label, int remainingTime, String powerUpType);
 
     /**
-     * Hides the label.
+     * Attach the label to the panel.
+     * @param label
+     * @param powerUpType
      */
-    void hideTimerLabel();
+    void addLabel(JLabel label, GameObjectEnum powerUpType);
+
+    /**
+     * Removes the label from the panel.
+     * @param label
+     * @param powerUpType
+     */
+    void removeLabel(JLabel label, GameObjectEnum powerUpType);
 }

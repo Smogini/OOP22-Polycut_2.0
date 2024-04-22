@@ -22,4 +22,9 @@ public interface GameLoop {
      * @param difficulty
      */
     void setDifficulty(int difficulty);
+
+    /**
+     * Starts the spawn/redraw timers.
+     */
+    void startTimers();
 }

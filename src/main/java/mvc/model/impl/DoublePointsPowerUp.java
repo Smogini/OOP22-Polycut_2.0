@@ -1,6 +1,8 @@
 package mvc.model.impl;
 
 import java.awt.geom.Point2D;
+
+import mvc.controller.BladeController;
 import mvc.controller.ScoreController;
 import mvc.model.GameObjectEnum;
 
@@ -19,11 +21,12 @@ public class DoublePointsPowerUp extends AbstractPowerUp {
      * @param velocity Point2D vector of the new velocity of the object.
      * @param sliceableId the sliceable identifier.
      * @param scoreController
+     * @param bladeController
      */
     public DoublePointsPowerUp(final Integer nsides, final Point2D position,
                                final Point2D velocity, final int sliceableId,
-                               final ScoreController scoreController) {
-        super(nsides, position, velocity, sliceableId, scoreController);
+                               final ScoreController scoreController, final BladeController bladeController) {
+        super(nsides, position, velocity, sliceableId, scoreController, bladeController);
         this.scoreController = scoreController;
     }
 

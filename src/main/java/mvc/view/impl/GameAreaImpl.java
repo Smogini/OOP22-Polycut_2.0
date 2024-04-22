@@ -57,8 +57,8 @@ public class GameAreaImpl extends JPanel implements GameArea {
     @Override
     public void drawSliceable(final SliceableModel sliceable, final GameObjectEnum type) {
         final int sliceableId = sliceable.getSliceableId();
-        final int sliceableHeight = type.getHeight();
-        final int sliceableWidth = SliceableView.SLICEABLE_WIDTH;
+        final int sliceableHeight = SliceableView.SLICEABLE_SIZE;
+        final int sliceableWidth = SliceableView.SLICEABLE_SIZE;
         final int posX = (int) sliceable.getPosition().getX();
         final int posY = (int) sliceable.getPosition().getY();
         final ImageIcon image = new ImageIcon(SliceableView.class.getResource(type.getImagePath()));
@@ -114,15 +114,12 @@ public class GameAreaImpl extends JPanel implements GameArea {
     }
 
     /**
-     * Update the position of the sliceable.
-     * @param sliceableID of the sliceable
-     * @param newPosition of the sliceable
-     * @param type of the sliceable to manage dimensions
+     * {@inheritdoc}.
      */
     @Override
-    public void updatePosition(final Integer sliceableID, final Point2D newPosition, final GameObjectEnum type) {
-        final int sliceableHeight = type.getHeight();
-        final int sliceableWidth = SliceableView.SLICEABLE_WIDTH;
+    public void updatePosition(final Integer sliceableID, final Point2D newPosition) {
+        final int sliceableHeight = SliceableView.SLICEABLE_SIZE;
+        final int sliceableWidth = SliceableView.SLICEABLE_SIZE;
 
         labelMap.computeIfPresent(sliceableID, (key, label) -> {
             label.setBounds((int) newPosition.getX(), (int) newPosition.getY(), sliceableWidth, sliceableHeight);

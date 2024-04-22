@@ -35,7 +35,7 @@ public class GameScreenImpl implements GameScreen {
 
     private final LiveImpl livesLabel;
     private final ScoreViewImpl scoreLabel;
-    private final TimerViewImpl timerLabel;
+    private final TimerViewImpl timerPanel;
     private final JFrame frame;
     private final Dimension screenSize;
 
@@ -53,7 +53,7 @@ public class GameScreenImpl implements GameScreen {
         this.screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.livesLabel = livesController.getLiveInstance();
         this.scoreLabel = scoreController.getScoreInstance();
-        this.timerLabel = timerView;
+        this.timerPanel = timerView;
     }
 
     /**
@@ -108,7 +108,8 @@ public class GameScreenImpl implements GameScreen {
         // Lives on the left
         upperPanel.add(livesLabel, BorderLayout.WEST);
 
-        upperPanel.add(timerLabel, BorderLayout.CENTER);
+        upperPanel.add(timerPanel, BorderLayout.CENTER);
+        // this.frame.add(timerPanel, BorderLayout.WEST);
 
         // Score on the right
         upperPanel.add(scoreLabel, BorderLayout.EAST);

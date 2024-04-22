@@ -5,7 +5,6 @@ import java.util.Random;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import mvc.controller.BladeController;
-import mvc.controller.GameWorldController;
 import mvc.controller.LivesController;
 import mvc.controller.ScoreController;
 import mvc.model.GameObjectEnum;
@@ -23,11 +22,10 @@ public class SliceableFactoryImpl implements SliceableFactory {
     private static final double MIN_Y_VELOCITY = 85.0;
     private static final double INC_X_RATE = 10.0;
     private static final double INC_Y_RATE = 40.0;
-    private static final Integer POWER_UP_CHOICE = 2;
+    private static final Integer POWER_UP_CHOICE = 3;
 
     private final LivesController livesController;
     private final ScoreController scoreController;
-    private final GameWorldController gameController;
     private final BladeController bladeController;
 
     private Point2D startPositionNext;
@@ -43,19 +41,17 @@ public class SliceableFactoryImpl implements SliceableFactory {
      * @param difficulty
      * @param livesController
      * @param scoreController
-     * @param gameController
      * @param bladeController
      */
     @SuppressFBWarnings
     public SliceableFactoryImpl(final Integer width, final Integer height, final int difficulty,
                                 final LivesController livesController, final ScoreController scoreController,
-                                final GameWorldController gameController, final BladeController bladeController) {
+                                final BladeController bladeController) {
         this.screenWidth = width;
         this.screenHeight = height;
         this.difficulty = difficulty;
         this.livesController = livesController;
         this.scoreController = scoreController;
-        this.gameController = gameController;
         this.bladeController = bladeController;
     }
 
@@ -138,10 +134,14 @@ public class SliceableFactoryImpl implements SliceableFactory {
         switch (powerUpChoice) {
             case 0:
                 return new DoublePointsPowerUp(GameObjectEnum.getSliceableSides(GameObjectEnum.DOUBLE_POINTS), startPositionNext,
-                                            startVelocityNext, powerUpId, this.scoreController);
+                                            startVelocityNext, powerUpId, this.scoreController, this.bladeController);
             case 1:
                 return new BombImmunityPowerUp(GameObjectEnum.getSliceableSides(GameObjectEnum.BOMB_IMMUNITY), startPositionNext,
                                             startVelocityNext, powerUpId, this.scoreController, this.bladeController);
+            case 2:
+                return new FreezePowerUp(GameObjectEnum.getSliceableSides(GameObjectEnum.FREEZE),
+                                        startPositionNext, startVelocityNext, powerUpId, this.scoreController,
+                                        this.bladeController);
             default:
                 break;
         }

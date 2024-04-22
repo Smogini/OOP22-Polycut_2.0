@@ -22,11 +22,11 @@ import java.util.Random;
  */
 public class GameLoopImpl implements GameLoop {
 
-    private static final Integer INITIAL_SPAWN_TIME = 3000;
+    private static final Integer INITIAL_SPAWN_TIME = 500;
     private static final Double DT = 0.2;
     private static final Integer REDRAW_DELAY = 10;
-    private static final Double SLICEABLE_PERCENTAGE = 0.3;
-    private static final Double POWERUP_PERCENTAGE = 0.8;
+    private static final Double SLICEABLE_PERCENTAGE = 0.8;
+    private static final Double POWERUP_PERCENTAGE = 0.1;
     private static final Integer DECREASE_50 = 50;
     private static final Integer DECREASE_100 = 100;
     private static final Integer DECREASE_150 = 150;
@@ -41,6 +41,8 @@ public class GameLoopImpl implements GameLoop {
     private final PhysicControllerImpl physics;
     private final GameScreenImpl screen;
     private final LiveImpl lives;
+    private final BladeController bladeController;
+
     private final Timer gameTimer;
     private final Timer redrawTimer;
     private final Random rand = new Random();
@@ -50,6 +52,7 @@ public class GameLoopImpl implements GameLoop {
      * @param world game world controller.
      * @param livesController lives controller.
      * @param screen the GameScreen.
+     * @param bladeController
      */
     @SuppressFBWarnings
     public GameLoopImpl(final GameWorldControllerImpl world, final LivesController livesController, final GameScreenImpl screen,
@@ -57,6 +60,7 @@ public class GameLoopImpl implements GameLoop {
         this.lives = livesController.getLiveInstance();
         this.screen = screen;
         this.world = world;
+        this.bladeController = bladeController;
         this.spawnTime = INITIAL_SPAWN_TIME;
         this.physics = new PhysicControllerImpl(DT, world);
         final GameArea area = screen.createAndShowGui(bladeController);
@@ -65,11 +69,10 @@ public class GameLoopImpl implements GameLoop {
             this.gameTimer = new Timer(spawnTime, e -> this.loop(area));
             this.redrawTimer = new Timer(REDRAW_DELAY, e -> this.redraw(area));
             redrawTimer.setRepeats(true);
-            redrawTimer.start();
             gameTimer.setRepeats(true);
-            gameTimer.start();
         } else {
-            this.gameTimer = this.redrawTimer = null;
+            this.gameTimer = null;
+            this.redrawTimer = null;
         }
     }
 
@@ -78,14 +81,18 @@ public class GameLoopImpl implements GameLoop {
      */
     @Override
     public void loop(final GameArea area) {
+        if (this.bladeController.isFrozen()) {
+            // this.gameTimer.stop();
+            this.redrawTimer.stop();
+            return;
+        }
+        this.redrawTimer.start();
         final double choice = this.rand.nextDouble();
         this.incrementDifficulty();
         final int id = this.rand.nextInt();
-        // final SliceableModel sliceable = choice >= SLICEABLE_PERCENTAGE && choice < POWERUP_PERCENTAGE
-        //                                 ? this.world.createPolygon(id) : choice >= POWERUP_PERCENTAGE
-        //                                 ? this.world.createPowerUp(id) : this.world.createBomb(id);
-        final SliceableModel sliceable = choice >= SLICEABLE_PERCENTAGE ? this.world.createPowerUp(id) : this.world.createBomb(id);
-        // GameAreaImpl.playSound("Audio/cut.wav");
+        final SliceableModel sliceable = choice <= SLICEABLE_PERCENTAGE && choice > POWERUP_PERCENTAGE
+                                        ? this.world.createPolygon(id) : choice <= POWERUP_PERCENTAGE
+                                        ? this.world.createPowerUp(id) : this.world.createBomb(id);
         area.drawSliceable(sliceable, GameObjectEnum.getSliceableType(sliceable.getSides()));
     }
 
@@ -108,8 +115,7 @@ public class GameLoopImpl implements GameLoop {
                                     }
                                 });
         this.world.getSliceables()
-                    .forEach(s -> area.updatePosition(s.getSliceableId(), s.getPosition(),
-                            GameObjectEnum.getSliceableType(s.getSides())));
+                    .forEach(s -> area.updatePosition(s.getSliceableId(), s.getPosition()));
     }
 
     /**
@@ -165,6 +171,15 @@ public class GameLoopImpl implements GameLoop {
             default:
                 throw new IllegalArgumentException("Incorrect difficulty value!");
         }
+    }
+
+    /**
+     * {@inheritdoc}.
+     */
+    @Override
+    public void startTimers() {
+        this.gameTimer.start();
+        this.redrawTimer.start();
     }
 
 }

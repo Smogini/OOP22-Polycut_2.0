@@ -2,14 +2,13 @@ package mvc.model;
 
 import org.junit.jupiter.api.Test;
 
+import mvc.controller.BladeController;
 import mvc.controller.LivesController;
 import mvc.controller.ScoreController;
 import mvc.controller.impl.BladeControllerImpl;
-import mvc.controller.impl.GameWorldControllerImpl;
 import mvc.controller.impl.LivesControllerImpl;
 import mvc.controller.impl.ScoreControllerImpl;
 import mvc.model.impl.SliceableFactoryImpl;
-import mvc.view.GameScreen;
 import mvc.view.impl.GameScreenImpl;
 import mvc.view.impl.TimerViewImpl;
 
@@ -19,11 +18,11 @@ class SliceableFactoryImplTest {
     private final LivesController livesController = new LivesControllerImpl();
     private final ScoreController scoreController = new ScoreControllerImpl();
     private final TimerViewImpl timerView = new TimerViewImpl();
-    private final GameScreen screen = new GameScreenImpl(livesController, scoreController, timerView);
+    private final GameScreenImpl screen = new GameScreenImpl(livesController, scoreController, timerView);
+    private final BladeController bladeController = new BladeControllerImpl(timerView);
     private final SliceableFactoryImpl factory = new SliceableFactoryImpl(screen.getScreenWidth(), screen.getScreenHeight(), 0,
                                                                           livesController, scoreController,
-                                                                          new GameWorldControllerImpl(0),
-                                                                          new BladeControllerImpl(timerView));
+                                                                          bladeController);
 
     /**
      * Test class of the Sliceable Factory createBomb method. It controls that every Bomb created

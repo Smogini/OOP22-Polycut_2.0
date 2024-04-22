@@ -1,22 +1,23 @@
 package mvc.model.impl;
 
 import java.awt.geom.Point2D;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import mvc.controller.BladeController;
 import mvc.controller.ScoreController;
 import mvc.model.GameObjectEnum;
 
 /**
- * Implementation class of the bomb immunity power up.
+ * Implementation class of the freeze power up.
  */
-public class BombImmunityPowerUp extends AbstractPowerUp {
+public class FreezePowerUp extends AbstractPowerUp {
 
-    private static final int IMMUNITY_TIME = 10;
+    private static final int FREEZE_TIME = 5;
 
     private final BladeController bladeController;
 
     /**
-     * Constructor of a bomb immunity power up.
+     * Constructor of a freeze power up.
      * 
      * @param nsides number of sides of the sliceable polygon.
      * @param position Point2D position of the sliceable, to update every timestep.
@@ -26,9 +27,8 @@ public class BombImmunityPowerUp extends AbstractPowerUp {
      * @param bladeController
      */
     @SuppressFBWarnings
-    public BombImmunityPowerUp(final Integer nsides, final Point2D position, final Point2D velocity,
-                               final Integer sliceableId, final ScoreController scoreController,
-                               final BladeController bladeController) {
+    public FreezePowerUp(final Integer nsides, final Point2D position, final Point2D velocity, final Integer sliceableId,
+                        final ScoreController scoreController, final BladeController bladeController) {
         super(nsides, position, velocity, sliceableId, scoreController, bladeController);
         this.bladeController = bladeController;
     }
@@ -38,7 +38,7 @@ public class BombImmunityPowerUp extends AbstractPowerUp {
      */
     @Override
     public GameObjectEnum getPowerUpType() {
-        return GameObjectEnum.BOMB_IMMUNITY;
+        return GameObjectEnum.FREEZE;
     }
 
     /**
@@ -46,9 +46,7 @@ public class BombImmunityPowerUp extends AbstractPowerUp {
      */
     @Override
     public void cut() {
-        this.bladeController.insertPowerUp(getPowerUpType(), IMMUNITY_TIME);
-        // this.bladeController.setBombImmunity(true);
-        // this.bladeController.startPowerUpTimer(IMMUNITY_TIME, getPowerUpType());
+        this.bladeController.insertPowerUp(getPowerUpType(), FREEZE_TIME);
         super.cut();
     }
 

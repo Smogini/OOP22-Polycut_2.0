@@ -9,52 +9,55 @@ import java.util.Optional;
  */
 public enum GameObjectEnum {
     /**
+     * Bomb.
+     */
+    BOMB("bomb"),
+    /**
      * 3 sides.
      */
-    TRIANGLE("triangle", 88),
+    TRIANGLE("triangle"),
     /**
      * 4 sides.
      */
-    SQUARE("square", 100),
+    SQUARE("square"),
     /**
      * 5 sides.
      */
-    PENTAGON("pentagon", 97),
+    PENTAGON("pentagon"),
     /**
      * 6 sides.
      */
-    HEXAGON("hexagon", 112),
-    /**
-     * Bomb.
-     */
-    BOMB("bomb", 100),
+    HEXAGON("hexagon"),
     /**
      * Double points.
      */
-    DOUBLE_POINTS("double_pts", 143),
+    DOUBLE_POINTS("double_pts"),
     /**
      * Bomb immunity.
      */
-    BOMB_IMMUNITY("bomb_immunity", 143);
+    BOMB_IMMUNITY("bomb_immunity"),
+    /**
+     * Freeze.
+     */
+    FREEZE("freeze");
 
     private static final Map<Integer, GameObjectEnum> SIDES_MAP = new HashMap<>();
 
     private final String imagePath;
-    private final int height;
 
     static {
-        SIDES_MAP.put(0, GameObjectEnum.BOMB);
-        SIDES_MAP.put(3, GameObjectEnum.TRIANGLE);
-        SIDES_MAP.put(4, GameObjectEnum.SQUARE);
-        SIDES_MAP.put(5, GameObjectEnum.PENTAGON);
-        SIDES_MAP.put(6, GameObjectEnum.HEXAGON);
-        SIDES_MAP.put(7, GameObjectEnum.DOUBLE_POINTS);
-        SIDES_MAP.put(8, GameObjectEnum.BOMB_IMMUNITY);
+        SIDES_MAP.put(0, BOMB);
+        SIDES_MAP.put(3, TRIANGLE);
+        SIDES_MAP.put(4, SQUARE);
+        SIDES_MAP.put(5, PENTAGON);
+        SIDES_MAP.put(6, HEXAGON);
+        SIDES_MAP.put(7, DOUBLE_POINTS);
+        SIDES_MAP.put(8, BOMB_IMMUNITY);
+        SIDES_MAP.put(9, FREEZE);
     }
 
-    GameObjectEnum(final String imageName, final int height) {
+    GameObjectEnum(final String imageName) {
         this.imagePath = "/GraphicElements/" + imageName + ".png";
-        this.height = height;
     }
 
     /**
@@ -85,10 +88,20 @@ public enum GameObjectEnum {
     }
 
     /**
-     * @return the sliceable's height.
+     * {@inheritdoc}.
      */
-    public int getHeight() {
-        return this.height;
+    @Override
+    public String toString() {
+        switch (this) {
+            case BOMB_IMMUNITY:
+                return "Bomb immunity";
+            case FREEZE:
+                return "Freeze";
+            case DOUBLE_POINTS:
+                return "Double points";
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
 }

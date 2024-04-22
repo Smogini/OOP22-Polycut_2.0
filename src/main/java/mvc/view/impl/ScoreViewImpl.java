@@ -21,18 +21,22 @@ public final class ScoreViewImpl extends JLabel implements ScoreView {
      * Constructor sets up the font and the default score of 0.
      */
     public ScoreViewImpl() {
-        final Font scoreFont;
         this.currentScore = 0;
         this.setText("Score: " + currentScore);
+        this.setFont(getPersonalizedFont());
+    }
 
+    /**
+     * @return the font specified in the method.
+     */
+    public static Font getPersonalizedFont() {
         try (InputStream fontInputStream =
-                     getClass().getResourceAsStream("/GraphicElements/Orbitron/Orbitron-VariableFont_wght.ttf")) {
+                ScoreViewImpl.class.getResourceAsStream("/GraphicElements/Orbitron/Orbitron-VariableFont_wght.ttf")) {
             if (fontInputStream == null) {
                 throw new IllegalStateException("Font file not found.");
             }
 
-            scoreFont = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(Font.PLAIN, FONT_SIZE);
-            this.setFont(scoreFont);
+            return Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(Font.PLAIN, FONT_SIZE);
         } catch (FontFormatException | IOException e) {
             throw new IllegalStateException(e);
         }
