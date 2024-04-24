@@ -25,6 +25,12 @@ public interface ScoreView {
     void increaseScore(int points);
 
     /**
+     * Decrease the player's score.
+     * @param points
+     */
+    void decreaseScore(int points);
+
+    /**
      * @return the istance of the Score class. Used to resolve spotbugs errors.
      */
     ScoreViewImpl getCurrScoreImpl();

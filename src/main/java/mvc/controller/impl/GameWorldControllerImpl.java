@@ -11,9 +11,11 @@ import mvc.controller.GameWorldController;
 import mvc.controller.LivesController;
 import mvc.controller.ScoreController;
 import mvc.model.SliceableModel;
+import mvc.model.GameObjectEnum;
 import mvc.model.PowerUpModel;
 import mvc.model.SliceableFactory;
 import mvc.model.impl.BombImpl;
+import mvc.model.impl.PolygonImpl;
 import mvc.model.impl.SliceableFactoryImpl;
 import mvc.view.impl.GameScreenImpl;
 import mvc.view.impl.TimerViewImpl;
@@ -87,7 +89,8 @@ public class GameWorldControllerImpl implements GameWorldController {
      */
     @Override
     public SliceableModel createPolygon(final int sliceableId) {
-        final SliceableModel polygon = factory.createPolygon(sliceableId);
+        final PolygonImpl polygon = (PolygonImpl) factory.createPolygon(sliceableId);
+        polygon.setDoubleScore(this.bladeController.isPowerUpEnabled(GameObjectEnum.DOUBLE_SCORE));
         this.polygons.add(polygon);
         return polygon;
     }
@@ -98,7 +101,7 @@ public class GameWorldControllerImpl implements GameWorldController {
     @Override
     public SliceableModel createBomb(final int bombId) {
         final BombImpl bomb = factory.createBomb(bombId);
-        bomb.setImmunity(this.bladeController.isBombImmunity());
+        bomb.setImmunity(this.bladeController.isPowerUpEnabled(GameObjectEnum.BOMB_IMMUNITY));
         this.bombs.add(bomb);
         return bomb;
     }

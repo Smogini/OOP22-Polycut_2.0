@@ -20,8 +20,7 @@ public class BladeControllerImpl implements BladeController {
 
     private final TimerViewImpl timerView;
     private final Map<GameObjectEnum, List<TimerController>> powerUpTimers;
-    private boolean isBombImmunity;
-    private boolean isFrozen;
+    private final Map<GameObjectEnum, Boolean> powerUpEnabled;
 
     /**
      * BladeController's constructor.
@@ -31,6 +30,13 @@ public class BladeControllerImpl implements BladeController {
     public BladeControllerImpl(final TimerViewImpl timerView) {
         this.timerView = timerView;
         this.powerUpTimers = new HashMap<>();
+        this.powerUpEnabled = new HashMap<>();
+        this.powerUpEnabled.putAll(Map.of(
+            GameObjectEnum.BOMB_IMMUNITY, false,
+            GameObjectEnum.FREEZE, false,
+            GameObjectEnum.INCREASE_SPEED, false,
+            GameObjectEnum.DOUBLE_SCORE, false
+            ));
     }
 
     /**
@@ -39,22 +45,6 @@ public class BladeControllerImpl implements BladeController {
     @Override
     public void cutSliceable(final SliceableModel sliceable) {
         sliceable.cut();
-    }
-
-    /**
-     * {@inheritdoc}.
-     */
-    @Override
-    public void setBombImmunity(final boolean immunity) {
-        this.isBombImmunity = immunity;
-    }
-
-    /**
-     * {@inheritDoc}.
-     */
-    @Override
-    public boolean isBombImmunity() {
-        return this.isBombImmunity;
     }
 
     /**
@@ -72,16 +62,16 @@ public class BladeControllerImpl implements BladeController {
     }
 
     /**
-     * {@inheritdoc}.
+     * Inserts the specified power up in the Map, initializing the TimerController for it.
+     * @param powerUpType
+     * @param duration
      */
-    @Override
-    public void insertPowerUp(final GameObjectEnum powerUpType, final int duration) {
+    private void insertPowerUp(final GameObjectEnum powerUpType, final int duration) {
         if (this.powerUpTimers.containsKey(powerUpType)) {
             removePowerUp(powerUpType);
         }
         final TimerController timerController = new TimerControllerImpl(this.timerView, this);
         timerController.setPowerUpDuration(duration);
-        setPowerUpStatus(powerUpType, true);
         this.powerUpTimers.computeIfAbsent(powerUpType, l -> new ArrayList<>()).add(timerController);
     }
 
@@ -89,17 +79,11 @@ public class BladeControllerImpl implements BladeController {
      * {@inheritdoc}.
      */
     @Override
-    public void setPowerUpStatus(final GameObjectEnum powerUpType, final boolean enable) {
-        switch (powerUpType) {
-            case BOMB_IMMUNITY:
-                this.isBombImmunity = enable;
-                break;
-            case FREEZE:
-                this.isFrozen = enable;
-                break;
-            default:
-                break;
+    public void setPowerUpStatus(final GameObjectEnum powerUpType, final int duration, final boolean enable) {
+        if (duration > 0) {
+            insertPowerUp(powerUpType, duration);
         }
+        this.powerUpEnabled.replace(powerUpType, enable);
     }
 
     /**
@@ -117,11 +101,19 @@ public class BladeControllerImpl implements BladeController {
     }
 
     /**
+     * {@inheritodc}.
+     */
+    @Override
+    public Map<GameObjectEnum, Boolean> getEnabledPowerUp() {
+        return new HashMap<>(this.powerUpEnabled);
+    }
+
+    /**
      * {@inheritdoc}.
      */
     @Override
-    public boolean isFrozen() {
-        return this.isFrozen;
+    public boolean isPowerUpEnabled(final GameObjectEnum powerUpType) {
+        return this.powerUpEnabled.get(powerUpType);
     }
 
 }

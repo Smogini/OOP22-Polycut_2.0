@@ -1,9 +1,5 @@
 package mvc.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 /**
  * Enum For the Polygon's Type.
  */
@@ -11,53 +7,54 @@ public enum GameObjectEnum {
     /**
      * Bomb.
      */
-    BOMB("bomb"),
+    BOMB("bomb", 0),
     /**
      * 3 sides.
      */
-    TRIANGLE("triangle"),
+    TRIANGLE("triangle", 3),
     /**
      * 4 sides.
      */
-    SQUARE("square"),
+    SQUARE("square", 4),
     /**
      * 5 sides.
      */
-    PENTAGON("pentagon"),
+    PENTAGON("pentagon", 5),
     /**
      * 6 sides.
      */
-    HEXAGON("hexagon"),
+    HEXAGON("hexagon", 6),
     /**
      * Double points.
      */
-    DOUBLE_POINTS("double_pts"),
+    DOUBLE_POINTS("double_pts", 7),
     /**
      * Bomb immunity.
      */
-    BOMB_IMMUNITY("bomb_immunity"),
+    BOMB_IMMUNITY("bomb_immunity", 8),
     /**
      * Freeze.
      */
-    FREEZE("freeze");
+    FREEZE("freeze", 9),
+    /**
+     * Increase speed.
+     */
+    INCREASE_SPEED("inc_speed", 10),
+    /**
+     * Lose points.
+     */
+    LOSE_POINTS("lose_pts", 11),
+    /**
+     * Double score.
+     */
+    DOUBLE_SCORE("double_score", 12);
 
-    private static final Map<Integer, GameObjectEnum> SIDES_MAP = new HashMap<>();
+    private final String imageName;
+    private final int sides;
 
-    private final String imagePath;
-
-    static {
-        SIDES_MAP.put(0, BOMB);
-        SIDES_MAP.put(3, TRIANGLE);
-        SIDES_MAP.put(4, SQUARE);
-        SIDES_MAP.put(5, PENTAGON);
-        SIDES_MAP.put(6, HEXAGON);
-        SIDES_MAP.put(7, DOUBLE_POINTS);
-        SIDES_MAP.put(8, BOMB_IMMUNITY);
-        SIDES_MAP.put(9, FREEZE);
-    }
-
-    GameObjectEnum(final String imageName) {
-        this.imagePath = "/GraphicElements/" + imageName + ".png";
+    GameObjectEnum(final String imageName, final int sides) {
+        this.imageName = imageName;
+        this.sides = sides;
     }
 
     /**
@@ -65,7 +62,12 @@ public enum GameObjectEnum {
      * @return the GameObject type associated to the sliceable side.
      */
     public static GameObjectEnum getSliceableType(final int sides) {
-        return SIDES_MAP.getOrDefault(sides, null);
+        for (final var elem : GameObjectEnum.values()) {
+            if (elem.sides == sides) {
+                return elem;
+            }
+        }
+        return null;
     }
 
     /**
@@ -73,18 +75,19 @@ public enum GameObjectEnum {
      * @return the sides of the specified sliceable.
      */
     public static int getSliceableSides(final GameObjectEnum sliceable) {
-        final Optional<Integer> numberOfSides = SIDES_MAP.entrySet().stream()
-            .filter(entry -> entry.getValue() == sliceable)
-            .map(Map.Entry::getKey)
-            .findFirst();
-        return numberOfSides.orElse(-1);
+        for (final var elem : GameObjectEnum.values()) {
+            if (elem.equals(sliceable)) {
+                return elem.sides;
+            }
+        }
+        return -1;
     }
 
     /**
      * @return the absolute image path as a String.
      */
     public String getImagePath() {
-        return this.imagePath;
+        return "/GraphicElements/" + imageName + ".png";
     }
 
     /**
@@ -99,6 +102,12 @@ public enum GameObjectEnum {
                 return "Freeze";
             case DOUBLE_POINTS:
                 return "Double points";
+            case INCREASE_SPEED:
+                return "Increase speed";
+            case LOSE_POINTS:
+                return "Lose points";
+            case DOUBLE_SCORE:
+                return "Double score";
             default:
                 throw new IllegalArgumentException();
         }

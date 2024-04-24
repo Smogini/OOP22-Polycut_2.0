@@ -15,7 +15,7 @@ public interface TimerView {
      * @param remainingTime
      * @param powerUpType
      */
-    void updateTimerLabel(JLabel label, int remainingTime, String powerUpType);
+    void updateTimerLabel(JLabel label, int remainingTime, GameObjectEnum powerUpType);
 
     /**
      * Attach the label to the panel.

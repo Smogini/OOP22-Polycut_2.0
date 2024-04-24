@@ -1,10 +1,10 @@
-package mvc.model.impl;
+package mvc.model.impl.powerup;
 
 import java.awt.geom.Point2D;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import mvc.controller.BladeController;
 import mvc.controller.ScoreController;
 import mvc.model.GameObjectEnum;
+import mvc.model.impl.AbstractPowerUp;
 
 /**
  * Implementation class of the bomb immunity power up.
@@ -12,8 +12,6 @@ import mvc.model.GameObjectEnum;
 public class BombImmunityPowerUp extends AbstractPowerUp {
 
     private static final int IMMUNITY_TIME = 10;
-
-    private final BladeController bladeController;
 
     /**
      * Constructor of a bomb immunity power up.
@@ -25,12 +23,10 @@ public class BombImmunityPowerUp extends AbstractPowerUp {
      * @param scoreController
      * @param bladeController
      */
-    @SuppressFBWarnings
     public BombImmunityPowerUp(final Integer nsides, final Point2D position, final Point2D velocity,
                                final Integer sliceableId, final ScoreController scoreController,
                                final BladeController bladeController) {
-        super(nsides, position, velocity, sliceableId, scoreController, bladeController);
-        this.bladeController = bladeController;
+        super(nsides, position, velocity, sliceableId, IMMUNITY_TIME, scoreController, bladeController);
     }
 
     /**
@@ -39,17 +35,6 @@ public class BombImmunityPowerUp extends AbstractPowerUp {
     @Override
     public GameObjectEnum getPowerUpType() {
         return GameObjectEnum.BOMB_IMMUNITY;
-    }
-
-    /**
-     * {@inheritdoc}.
-     */
-    @Override
-    public void cut() {
-        this.bladeController.insertPowerUp(getPowerUpType(), IMMUNITY_TIME);
-        // this.bladeController.setBombImmunity(true);
-        // this.bladeController.startPowerUpTimer(IMMUNITY_TIME, getPowerUpType());
-        super.cut();
     }
 
 }

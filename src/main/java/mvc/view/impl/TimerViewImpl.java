@@ -35,16 +35,13 @@ public class TimerViewImpl extends JPanel implements TimerView {
      * {@inheritdoc}.
      */
     @Override
-    public void updateTimerLabel(final JLabel label, final int remainingTime, final String powerUpType) {
-        final var componentsList = this.getComponents();
-        for (final var component : componentsList) {
-            if (component instanceof JLabel && component.equals(label)) {
-                final JLabel specificLabel = (JLabel) component;
-                specificLabel.setText(powerUpType + ": " + remainingTime + "s");
-                specificLabel.setVisible(remainingTime > 0);
-                return;
-            }
+    public void updateTimerLabel(final JLabel label, final int remainingTime, final GameObjectEnum powerUpType) {
+        if (!this.labelsMap.containsValue(label)) {
+            return;
         }
+        final JLabel powerUpLabel = this.labelsMap.get(powerUpType);
+        powerUpLabel.setText(powerUpType.toString() + ": " + remainingTime + "s");
+        powerUpLabel.setVisible(remainingTime > 0);
     }
 
     /**

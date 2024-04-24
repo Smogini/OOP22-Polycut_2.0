@@ -1,6 +1,7 @@
 package mvc.model;
 
 import mvc.model.impl.BombImpl;
+import mvc.model.impl.PolygonImpl;
 
 /**
  * Factory pattern used to create different Sliceable objects: bombs and polygons.
@@ -19,7 +20,7 @@ public interface SliceableFactory {
      * @param polygonId
      * @return new Polygon.
      */
-    SliceableModel createPolygon(int polygonId);
+    PolygonImpl createPolygon(int polygonId);
 
     /**
      * Called by the game world when in need to create a new Power up.

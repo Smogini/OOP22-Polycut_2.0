@@ -14,6 +14,8 @@ import mvc.view.impl.LiveImpl;
 import mvc.view.GameArea;
 
 import javax.swing.Timer;
+
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -22,7 +24,7 @@ import java.util.Random;
  */
 public class GameLoopImpl implements GameLoop {
 
-    private static final Integer INITIAL_SPAWN_TIME = 500;
+    private static final Integer INITIAL_SPAWN_TIME = 3000;
     private static final Double DT = 0.2;
     private static final Integer REDRAW_DELAY = 10;
     private static final Double SLICEABLE_PERCENTAGE = 0.8;
@@ -77,19 +79,43 @@ public class GameLoopImpl implements GameLoop {
     }
 
     /**
+     * Active the effects of the enabled power ups in the map that requires to change the status of the redraw timer.
+     * @param enabledMap
+     */
+    private void activePowerUp(final Map<GameObjectEnum, Boolean> enabledMap) {
+        enabledMap.entrySet()
+                    .stream()
+                    .filter(m -> m.getValue())
+                    .map(Map.Entry::getKey)
+                    .anyMatch(powerUp -> {
+                        switch (powerUp) {
+                            case INCREASE_SPEED:
+                                this.restartGameTimer(spawnTime / 2);
+                                return false;
+                            case FREEZE:
+                                this.redrawTimer.stop();
+                                return true;
+                            default:
+                                return false;
+                        }
+                    });
+    }
+
+    /**
      * {@inheritDoc}.
      */
     @Override
     public void loop(final GameArea area) {
-        if (this.bladeController.isFrozen()) {
-            // this.gameTimer.stop();
-            this.redrawTimer.stop();
+        if (this.bladeController.isPowerUpEnabled(GameObjectEnum.FREEZE)) {
             return;
         }
-        this.redrawTimer.start();
+        if (!this.redrawTimer.isRunning()) {
+            this.redrawTimer.start();
+        }
+        activePowerUp(this.bladeController.getEnabledPowerUp());
         final double choice = this.rand.nextDouble();
-        this.incrementDifficulty();
         final int id = this.rand.nextInt();
+        this.incrementDifficulty();
         final SliceableModel sliceable = choice <= SLICEABLE_PERCENTAGE && choice > POWERUP_PERCENTAGE
                                         ? this.world.createPolygon(id) : choice <= POWERUP_PERCENTAGE
                                         ? this.world.createPowerUp(id) : this.world.createBomb(id);
@@ -110,12 +136,24 @@ public class GameLoopImpl implements GameLoop {
                                 .ifPresent(sliceable -> {
                                     area.clean(sliceable.getSliceableId());
                                     world.outOfBoundDelete(sliceable.getSliceableId());
-                                    if (sliceable instanceof PolygonImpl || sliceable instanceof PowerUpModel) {
+                                    if (sliceable instanceof PolygonImpl
+                                        && !causesLifeLoss(sliceable, GameObjectEnum.LOSE_POINTS)) {
                                         this.lives.decreaseLives(1);
                                     }
                                 });
         this.world.getSliceables()
                     .forEach(s -> area.updatePosition(s.getSliceableId(), s.getPosition()));
+    }
+
+    /**
+     * @param sliceable
+     * @param powerUpType
+     * @return true if the sliceable is a power up and causes to the player to lose a life, false otherwise.
+     */
+    private boolean causesLifeLoss(final SliceableModel sliceable, final GameObjectEnum powerUpType) {
+        final GameObjectEnum sliceableAsGameObject = GameObjectEnum.getSliceableType(sliceable.getSides());
+        return sliceable instanceof PowerUpModel
+            && sliceableAsGameObject.equals(powerUpType);
     }
 
     /**
@@ -133,12 +171,27 @@ public class GameLoopImpl implements GameLoop {
     }
 
     /**
+     * Restart the game timer with the specified delay.
+     * @param delay
+     */
+    private void restartGameTimer(final int delay) {
+        gameTimer.stop();
+        gameTimer.setDelay(delay);
+        gameTimer.restart();
+    }
+
+    /**
      * Increment the difficulty every n points.
      */
     private void incrementDifficulty() {
 
+        if (this.bladeController.isPowerUpEnabled(GameObjectEnum.INCREASE_SPEED)) {
+            return;
+        }
+
         if (spawnTime - decreaseFactor <= HALF_SEC) {
             spawnTime = HALF_SEC;
+            restartGameTimer(spawnTime);
             return;
         }
 
@@ -147,9 +200,7 @@ public class GameLoopImpl implements GameLoop {
         if (score % N_POINTS == 0 && score != lastScore) {
             spawnTime -= decreaseFactor;
             this.lastScore = score;
-            gameTimer.stop();
-            gameTimer.setDelay(spawnTime);
-            gameTimer.restart();
+            restartGameTimer(spawnTime);
         }
     }
 
@@ -169,7 +220,7 @@ public class GameLoopImpl implements GameLoop {
                 this.decreaseFactor = DECREASE_150;
                 break;
             default:
-                throw new IllegalArgumentException("Incorrect difficulty value!");
+                this.decreaseFactor = DECREASE_50;
         }
     }
 

@@ -1,6 +1,9 @@
 package mvc.model.impl;
 
 import java.awt.geom.Point2D;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -10,6 +13,12 @@ import mvc.controller.ScoreController;
 import mvc.model.GameObjectEnum;
 import mvc.model.PowerUpModel;
 import mvc.model.SliceableFactory;
+import mvc.model.impl.powerup.BombImmunityPowerUp;
+import mvc.model.impl.powerup.DoublePointsPowerUp;
+import mvc.model.impl.powerup.DoubleScorePowerUp;
+import mvc.model.impl.powerup.FreezePowerUp;
+import mvc.model.impl.powerup.IncreaseSpeedPowerUp;
+import mvc.model.impl.powerup.LosePointsPowerUp;
 
 /**
  * {@inheritDoc}.
@@ -21,8 +30,7 @@ public class SliceableFactoryImpl implements SliceableFactory {
     private static final double MIN_X_VELOCITY = 30.0;
     private static final double MIN_Y_VELOCITY = 85.0;
     private static final double INC_X_RATE = 10.0;
-    private static final double INC_Y_RATE = 40.0;
-    private static final Integer POWER_UP_CHOICE = 3;
+    private static final double INC_Y_RATE = 50.0;
 
     private final LivesController livesController;
     private final ScoreController scoreController;
@@ -130,22 +138,41 @@ public class SliceableFactoryImpl implements SliceableFactory {
     @Override
     public PowerUpModel createPowerUp(final int powerUpId) {
         this.doCalc();
-        final int powerUpChoice = RANDOM.nextInt(POWER_UP_CHOICE);
-        switch (powerUpChoice) {
-            case 0:
-                return new DoublePointsPowerUp(GameObjectEnum.getSliceableSides(GameObjectEnum.DOUBLE_POINTS), startPositionNext,
-                                            startVelocityNext, powerUpId, this.scoreController, this.bladeController);
-            case 1:
-                return new BombImmunityPowerUp(GameObjectEnum.getSliceableSides(GameObjectEnum.BOMB_IMMUNITY), startPositionNext,
-                                            startVelocityNext, powerUpId, this.scoreController, this.bladeController);
-            case 2:
-                return new FreezePowerUp(GameObjectEnum.getSliceableSides(GameObjectEnum.FREEZE),
-                                        startPositionNext, startVelocityNext, powerUpId, this.scoreController,
-                                        this.bladeController);
-            default:
-                break;
+        final var powerUpClasses = List.of(
+                                        DoublePointsPowerUp.class,
+                                        BombImmunityPowerUp.class,
+                                        FreezePowerUp.class,
+                                        IncreaseSpeedPowerUp.class,
+                                        LosePointsPowerUp.class,
+                                        DoubleScorePowerUp.class
+                                    );
+        final int powerUpChoice = RANDOM.nextInt(powerUpClasses.size());
+        final Class<? extends AbstractPowerUp> selectedClass = powerUpClasses.get(powerUpChoice);
+        final GameObjectEnum powerUpType = getPowerUpType(selectedClass.getSimpleName());
+
+        try {
+            final var constructor = selectedClass.getConstructor(
+                Integer.class, Point2D.class, Point2D.class,
+                    Integer.class, ScoreController.class, BladeController.class
+                );
+
+            return constructor.newInstance(
+                    GameObjectEnum.getSliceableSides(powerUpType),
+                    startPositionNext, startVelocityNext, powerUpId, this.scoreController, this.bladeController
+                );
+        } catch (final NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            return null;
         }
-        return null;
+    }
+
+    /**
+     * @param powerUpClassName
+     * @return the GameObjectEnum associated with the specified class name.
+     */
+    private GameObjectEnum getPowerUpType(final String powerUpClassName) {
+        final String[] parts = powerUpClassName.replace("PowerUp", "").split("(?=[A-Z])");
+        final String enumName = String.join("_", parts).toUpperCase(Locale.getDefault());
+        return GameObjectEnum.valueOf(enumName);
     }
 
 }

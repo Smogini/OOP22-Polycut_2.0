@@ -49,13 +49,13 @@ public class TimerControllerImpl implements TimerController {
             remainingTime--;
             if (remainingTime <= 0) {
                 stopTimer();
-                this.bladeController.setPowerUpStatus(powerUpType, false);
+                this.bladeController.setPowerUpStatus(powerUpType, 0, false);
                 timerView.removeLabel(timerLabel, powerUpType);
                 timerView.revalidate();
                 timerView.repaint();
             }
             timerModel.setTimerDuration(remainingTime);
-            timerView.updateTimerLabel(timerLabel, remainingTime, powerUpType.toString());
+            timerView.updateTimerLabel(timerLabel, remainingTime, powerUpType);
         });
     }
 

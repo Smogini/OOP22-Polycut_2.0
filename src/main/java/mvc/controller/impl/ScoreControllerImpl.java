@@ -37,6 +37,14 @@ public class ScoreControllerImpl implements ScoreController {
      * {@inheritdoc}.
      */
     @Override
+    public void decreaseScore(final int points) {
+        this.score.decreaseScore(points);
+    }
+
+    /**
+     * {@inheritdoc}.
+     */
+    @Override
     public ScoreViewImpl getScoreInstance() {
         return this.score.getCurrScoreImpl();
     }

@@ -3,6 +3,7 @@ package mvc.model;
 /**
  * Power Up interface.
  */
+
 public interface PowerUpModel extends SliceableModel {
 
     /**

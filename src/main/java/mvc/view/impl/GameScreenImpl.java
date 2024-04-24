@@ -109,7 +109,6 @@ public class GameScreenImpl implements GameScreen {
         upperPanel.add(livesLabel, BorderLayout.WEST);
 
         upperPanel.add(timerPanel, BorderLayout.CENTER);
-        // this.frame.add(timerPanel, BorderLayout.WEST);
 
         // Score on the right
         upperPanel.add(scoreLabel, BorderLayout.EAST);
@@ -173,11 +172,13 @@ public class GameScreenImpl implements GameScreen {
     }
 
     /**
+     * TODO fix
+     * Somehow if the screen height is > 1000 the game doesn't display correctly the objects on screen.
      * {@inheritDoc}.
      */
     @Override
     public int getScreenHeight() {
-        return this.screenSize.height;
+        return this.screenSize.height > 1000 ? 1000 : this.screenSize.height;
     }
 
     /**

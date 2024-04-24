@@ -2,6 +2,7 @@ package mvc.view.impl;
 
 import mvc.view.ScoreView;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.io.IOException;
@@ -15,6 +16,8 @@ public final class ScoreViewImpl extends JLabel implements ScoreView {
 
     private static final double serialVersionUID = 0L;
     private static final int FONT_SIZE = 35;
+    private static final int RIGHT_GAP = 15;
+
     private int currentScore;
 
     /**
@@ -24,6 +27,7 @@ public final class ScoreViewImpl extends JLabel implements ScoreView {
         this.currentScore = 0;
         this.setText("Score: " + currentScore);
         this.setFont(getPersonalizedFont());
+        this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, RIGHT_GAP));
     }
 
     /**
@@ -57,6 +61,19 @@ public final class ScoreViewImpl extends JLabel implements ScoreView {
     @Override
     public void increaseScore(final int points) {
         currentScore += points;
+        this.drawScore();
+    }
+
+    /**
+     * {@inheritodc}.
+     */
+    @Override
+    public void decreaseScore(final int points) {
+        if (this.currentScore - points < 0) {
+            this.currentScore = 0;
+        } else {
+            this.currentScore -= points;
+        }
         this.drawScore();
     }
 

@@ -11,6 +11,8 @@ public class PolygonImpl extends SliceableModelImpl {
 
     private final ScoreController scoreController;
 
+    private boolean doubleScore;
+
     /**
      * Constructor of a polygon.
      * 
@@ -28,11 +30,22 @@ public class PolygonImpl extends SliceableModelImpl {
     }
 
     /**
+     * Sets true if the double score power up is active, false otherwise.
+     * @param enable
+     */
+    public void setDoubleScore(final boolean enable) {
+        this.doubleScore = enable;
+    }
+    /**
      * {@inheritdoc}.
      */
     @Override
     public void cut() {
-        this.scoreController.increaseScore(1);
+        if (this.doubleScore) {
+            this.scoreController.increaseScore(2);
+        } else {
+            this.scoreController.increaseScore(1);
+        }
     }
 
 }
