@@ -30,12 +30,11 @@ public class BladeControllerImpl implements BladeController {
     public BladeControllerImpl(final TimerViewImpl timerView) {
         this.timerView = timerView;
         this.powerUpTimers = new HashMap<>();
-        this.powerUpEnabled = new HashMap<>();
-        this.powerUpEnabled.putAll(Map.of(
-            GameObjectEnum.BOMB_IMMUNITY, false,
-            GameObjectEnum.FREEZE, false,
-            GameObjectEnum.INCREASE_SPEED, false,
-            GameObjectEnum.DOUBLE_SCORE, false
+        this.powerUpEnabled = new HashMap<>(Map.of(
+                GameObjectEnum.BOMB_IMMUNITY, false,
+                GameObjectEnum.FREEZE, false,
+                GameObjectEnum.INCREASE_SPEED, false,
+                GameObjectEnum.DOUBLE_SCORE, false
             ));
     }
 

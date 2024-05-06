@@ -15,8 +15,9 @@ import mvc.view.GameArea;
 
 import javax.swing.Timer;
 
-import java.util.Map;
 import java.util.Random;
+import java.util.List;
+import java.util.Arrays;
 
 /**
  *Implementation class of GameLoop interface.
@@ -79,40 +80,19 @@ public class GameLoopImpl implements GameLoop {
     }
 
     /**
-     * Active the effects of the enabled power ups in the map that requires to change the status of the redraw timer.
-     * @param enabledMap
-     */
-    private void activePowerUp(final Map<GameObjectEnum, Boolean> enabledMap) {
-        enabledMap.entrySet()
-                    .stream()
-                    .filter(m -> m.getValue())
-                    .map(Map.Entry::getKey)
-                    .anyMatch(powerUp -> {
-                        switch (powerUp) {
-                            case INCREASE_SPEED:
-                                this.restartGameTimer(spawnTime / 2);
-                                return false;
-                            case FREEZE:
-                                this.redrawTimer.stop();
-                                return true;
-                            default:
-                                return false;
-                        }
-                    });
-    }
-
-    /**
      * {@inheritDoc}.
      */
     @Override
     public void loop(final GameArea area) {
         if (this.bladeController.isPowerUpEnabled(GameObjectEnum.FREEZE)) {
+            this.redrawTimer.stop();
             return;
+        } else if (this.bladeController.isPowerUpEnabled(GameObjectEnum.INCREASE_SPEED)) {
+            this.restartGameTimer(spawnTime / 2);
         }
         if (!this.redrawTimer.isRunning()) {
             this.redrawTimer.start();
         }
-        activePowerUp(this.bladeController.getEnabledPowerUp());
         final double choice = this.rand.nextDouble();
         final int id = this.rand.nextInt();
         this.incrementDifficulty();
@@ -150,10 +130,11 @@ public class GameLoopImpl implements GameLoop {
      * @param powerUpType
      * @return true if the sliceable is a power up and causes to the player to lose a life, false otherwise.
      */
-    private boolean causesLifeLoss(final SliceableModel sliceable, final GameObjectEnum powerUpType) {
+    private boolean causesLifeLoss(final SliceableModel sliceable, final GameObjectEnum... powerUpType) {
         final GameObjectEnum sliceableAsGameObject = GameObjectEnum.getSliceableType(sliceable.getSides());
+        final List<GameObjectEnum> list = Arrays.asList(powerUpType);
         return sliceable instanceof PowerUpModel
-            && sliceableAsGameObject.equals(powerUpType);
+            && !list.contains(sliceableAsGameObject);
     }
 
     /**

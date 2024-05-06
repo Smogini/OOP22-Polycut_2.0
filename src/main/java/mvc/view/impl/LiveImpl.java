@@ -5,8 +5,6 @@ import mvc.view.Live;
 import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 
-import java.nio.file.FileSystemNotFoundException;
-
 /**
  * Lives Implementation.
  */
@@ -32,9 +30,6 @@ public class LiveImpl extends JLabel implements Live {
      */
     private void setCorrectPath(final Integer livesCounter) {
         switch (livesCounter) {
-            case 0:
-                heartPath = "";
-                break;
             case 1:
                 heartPath = DEAFULT_PATH + "heart.png";
                 break;
@@ -45,7 +40,8 @@ public class LiveImpl extends JLabel implements Live {
                 heartPath = DEAFULT_PATH + "3hearts.png";
                 break;
             default:
-                throw new FileSystemNotFoundException();
+                heartPath = "";
+                break;
         }
     }
 

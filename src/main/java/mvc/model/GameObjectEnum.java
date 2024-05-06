@@ -62,7 +62,7 @@ public enum GameObjectEnum {
      * @return the GameObject type associated to the sliceable side.
      */
     public static GameObjectEnum getSliceableType(final int sides) {
-        for (final var elem : GameObjectEnum.values()) {
+        for (final GameObjectEnum elem : GameObjectEnum.values()) {
             if (elem.sides == sides) {
                 return elem;
             }
@@ -109,7 +109,7 @@ public enum GameObjectEnum {
             case DOUBLE_SCORE:
                 return "Double score";
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Power up not present");
         }
     }
 

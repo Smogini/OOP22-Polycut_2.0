@@ -22,6 +22,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,28 +90,33 @@ public class GameAreaImpl extends JPanel implements GameArea {
      * Plays the audio track specified by filePath.
      * @param filePath
      */
-    public static void playSound(final String filePath) {
-            final InputStream soundStream = GameAreaImpl.class.getClassLoader().getResourceAsStream(filePath);
-            final AudioInputStream audioInputStream;
-            final Clip clip;
-            try {
-                audioInputStream = AudioSystem.getAudioInputStream(soundStream);
-                clip = AudioSystem.getClip();
-                clip.addLineListener(event -> {
-                    if (event.getType() == LineEvent.Type.STOP) {
-                        clip.close();
-                        try {
-                            audioInputStream.close();
-                        } catch (final IOException e) {
-                            return;
-                        }
+    public void playSound(final String filePath) {
+        final InputStream soundStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath);
+        final InputStream bufferedIn = new BufferedInputStream(soundStream);
+        final AudioInputStream audioInputStream;
+        final Clip clip;
+        try {
+            audioInputStream = AudioSystem.getAudioInputStream(bufferedIn);
+            clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.addLineListener(event -> {
+                if (event.getType() == LineEvent.Type.STOP) {
+                    clip.close();
+                }
+            });
+            clip.start();
+            clip.addLineListener(event -> {
+                if (event.getType() == LineEvent.Type.STOP) {
+                    try {
+                        audioInputStream.close();
+                    } catch (final IOException e) {
+                        return;
                     }
-                });
-                clip.open(audioInputStream);
-                clip.start();
-            } catch (final UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-                return;
-            }
+                }
+            });
+        } catch (final UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            return;
+        }
     }
 
     /**
